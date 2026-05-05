@@ -1,0 +1,112 @@
+
+/* Small devices (phones, ≥ 576px) */
+@media (min-width: 150px) and (max-width: 479px) {
+ .top-text {
+    display: none;
+ }
+ .contact-box ul li{
+  padding:0 4px;
+ }
+ .header-social-media {
+    margin: auto;
+    text-align: center;
+}
+
+section#navigation-list {
+    padding: 5px 0;
+}
+.search-box ul.dropdown-menu.p-2.show {
+    min-width: 160px !important;
+}
+.user-account ul.dropdown-menu.p-0.show {
+    min-width: 100px;
+}
+.carousel-item {
+    height: 52vh;  /* taller on mobile */
+  }
+.carousel-caption {
+    left: 5%;
+}
+.carousel-caption h2{
+ width:52%;
+ font-size:1.75rem;
+}
+.website-operation-div {
+    float: right;
+    margin-top: 15px;
+    position: absolute;
+    right: 10px;
+    z-index: 999;
+}
+li.nav-item {
+    padding: 0;
+}
+footer#footer .header-social-media {
+    text-align: left;
+    margin: auto;
+}
+section#pesmos-list {
+    margin-top: 30px;
+}
+section#promo-div {
+    margin-top: 30px;
+}
+section#category-section {
+    margin-top: 30px;
+}
+section#promo-list {
+    margin-top: 30px;
+}
+section#cat-section {
+    margin-top: 30px;
+}
+section#promo-list-inner {
+    margin-top: 30px;
+}
+section#cat-section-industrial {
+    margin-top: 30px;
+}
+section#three-banners {
+    margin-top: 30px;
+}
+section#cat-section-office {
+    margin-top: 30px;
+}
+section#client-testimonials{
+ margin-top:20px;
+}
+section#selling-products {
+    margin-top: 30px;
+}
+footer#footer{
+ margin-top:20px;
+}
+.pay-box{
+ float:none;
+}
+
+
+
+}
+
+/* Medium devices (tablets, ≥ 768px) */
+@media (min-width: 480px) and (max-width: 767px) { {
+
+}
+
+/* Large devices (desktops, ≥ 992px) */
+@media (min-width: 768px) and (max-width: 991px) { {
+
+  .carousel-caption h2{
+   font-size: 2.7rem;
+  }
+
+}
+
+/* Extra large devices (large desktops, ≥ 1200px) */
+@media (min-width: 992px) and (max-width: 1199px) {
+
+}
+
+
+

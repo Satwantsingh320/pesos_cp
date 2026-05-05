@@ -1,0 +1,1 @@
+ALTER TABLE `products` ADD `type` ENUM('Nuevo','Reacondicionado','Usado') NOT NULL DEFAULT 'Nuevo' AFTER `total_sold`;
