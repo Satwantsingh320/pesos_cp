@@ -10,7 +10,7 @@ class WishlistService
     {
         return Wishlist::where(
             auth('customer')->check()
-            ? ['customers_id' => auth('customer')->id()]
+            ? ['customer_id' => auth('customer')->id()]
             : ['session_id' => session()->getId()]
         )->count();
     }

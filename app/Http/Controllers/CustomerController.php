@@ -207,7 +207,7 @@ class CustomerController extends Controller
         // Fetch customer with their specific orders and addresses
         $customer = Auth::guard('customer')->user();
         $orders = Order::where('customer_id', $customerId)->latest()->paginate(10);
-        $addresses = Address::where('customers_id', $customerId)->get();
+        $addresses = Address::where('customer_id', $customerId)->get();
 
         return view('website.dashboard', compact('customer', 'orders', 'addresses'));
     }
@@ -237,10 +237,10 @@ class CustomerController extends Controller
         $customerId = Auth::guard('customer')->id();
 
         // If first address, make it default
-        $isFirst = Address::where('customers_id', $customerId)->count() == 0;
+        $isFirst = Address::where('customer_id', $customerId)->count() == 0;
 
         Address::create(array_merge($request->all(), [
-            'customers_id' => $customerId,
+            'customer_id' => $customerId,
             'is_default' => $isFirst ? 1 : 0,
             'status' => 1
         ]));
@@ -254,10 +254,10 @@ class CustomerController extends Controller
         $customerId = Auth::guard('customer')->id();
 
         // Remove current default
-        Address::where('customers_id', $customerId)->update(['is_default' => 0]);
+        Address::where('customer_id', $customerId)->update(['is_default' => 0]);
 
         // Set new default
-        Address::where('customers_id', $customerId)->where('id', $id)->update(['is_default' => 1]);
+        Address::where('customer_id', $customerId)->where('id', $id)->update(['is_default' => 1]);
 
         return back()->with('success', 'Default address updated.')->with('active_tab', 'v-address');
     }
@@ -265,7 +265,7 @@ class CustomerController extends Controller
     // Delete Address
     public function deleteAddress($id)
     {
-        Address::where('customers_id', Auth::guard('customer')->id())->where('id', $id)->delete();
+        Address::where('customer_id', Auth::guard('customer')->id())->where('id', $id)->delete();
         return back()->with('success', 'Address deleted.')->with('active_tab', 'v-address');
     }
 

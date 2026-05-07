@@ -78,7 +78,7 @@
                   </td>
                   <td style="padding-top:10px;">
                     <strong>Gran total:</strong><br>
-                    MX${{ number_format($order->price, 2) }}
+                    {{CURRENCY}}{{ number_format($order->price, 2) }}
                   </td>
                 </tr>
               </table>
@@ -137,10 +137,10 @@
                     <td style="border-bottom:1px solid #eee;">{{ $item->name }}</td>
                     <td align="center" style="border-bottom:1px solid #eee;">{{ $item->quantity }}</td>
                     <td align="right" style="border-bottom:1px solid #eee;">
-                      MX${{ number_format($item->price, 2) }}
+                      {{CURRENCY}}{{ number_format($item->price, 2) }}
                     </td>
                     <td align="right" style="border-bottom:1px solid #eee;">
-                      MX${{ number_format($item->price * $item->quantity, 2) }}
+                      {{CURRENCY}}{{ number_format($item->price * $item->quantity, 2) }}
                     </td>
                   </tr>
                 @endforeach
@@ -151,20 +151,20 @@
                 <tr>
                   <td align="right">Total parcial:</td>
                   <td align="right" width="150">
-                    MX${{ number_format($subtotal, 2) }}
+                    {{CURRENCY}}{{ number_format($subtotal, 2) }}
                   </td>
                 </tr>
                 @if ($shippingAmount > 0)
                   <tr>
                     <td align="right">Envío:</td>
-                    <td align="right">MX${{ number_format($shippingAmount, 2) }}</td>
+                    <td align="right">{{CURRENCY}}{{ number_format($shippingAmount, 2) }}</td>
                   </tr>
                 @endif
 
                 @if ($tax > 0)
                   <tr>
                     <td align="right">Impuesto:</td>
-                    <td align="right">MX${{ number_format($tax, 2) }}</td>
+                    <td align="right">{{CURRENCY}}{{ number_format($tax, 2) }}</td>
                   </tr>
                 @endif
 
@@ -173,7 +173,7 @@
                 @if ($discount > 0)
                   <tr>
                     <td align="right">Descuento:</td>
-                    <td align="right">- MX${{ number_format($discount, 2) }}</td>
+                    <td align="right">- {{CURRENCY}}{{ number_format($discount, 2) }}</td>
                   </tr>
                 @endif
 
@@ -182,7 +182,7 @@
                     Gran total:
                   </td>
                   <td align="right" style="font-size:16px; font-weight:bold;">
-                    MX${{ number_format($order->price, 2) }}
+                    {{CURRENCY}}{{ number_format($order->price, 2) }}
                   </td>
                 </tr>
               </table>

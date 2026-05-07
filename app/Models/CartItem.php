@@ -12,7 +12,9 @@ class CartItem extends Model
         'price_at_time',
         'shipping_fee_at_time',
         'quantity',
-        'total'
+        'total',
+        'variant_id',
+        'variant_attributes'
     ];
     public function cart()
     {
@@ -21,5 +23,9 @@ class CartItem extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+    public function variant()
+    {
+        return $this->belongsTo(ProductVariant::class, 'variant_id');
     }
 }

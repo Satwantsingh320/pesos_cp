@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Cashier\Billable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\VipProductPrice;
 
 class Customer extends Authenticatable
 {
@@ -21,11 +22,35 @@ class Customer extends Authenticatable
     protected $guarded = [];
     public $sortOrder = 'asc';
     public $sortEntity = 'customers.id';
+    protected $fillable = [
+        'name',
+        'email',
+        'dial_code_iso',
+        'dial_code',
+        'phone',
+        'rfc_number',
+        'password',
+        'image',
+        'status',
+        'stripe_id',
+        'is_vip',
+        'vip_discount_type',
+        'vip_discount_value',
+        'vip_apply_to',
+        'vip_expiry_date',
+    ];
+    protected $casts = [
+        'is_vip' => 'boolean',
+        'vip_discount_value' => 'decimal:2',
+        'vip_expiry_date' => 'date'
+    ];
 
     public function orders()
     {
         return $this->hasMany(Order::class, 'customer_id', 'id');
     }
+
+
     public function scopeActive($query)
     {
         return $query->where('customers.status', 1);
@@ -94,6 +119,163 @@ class Customer extends Authenticatable
     public function addresses()
     {
         return $this->hasMany(Address::class);
+    }
+
+    public function vipPrices()
+    {
+        return $this->hasMany(VipProductPrice::class);
+    }
+
+    /**
+     * Get VIP price for a specific product/variant
+     */
+    public function getVipPrice($product, $variant = null)
+    {
+        // Check if customer is VIP and not expired
+        if (!$this->is_vip) {   //|| ($this->vip_expiry_date && $this->vip_expiry_date < now())
+            return null;
+        }
+
+        $productId = $product->id;
+        $variantId = $variant ? $variant->id : null;
+
+        // 1. Check for manual price override in vip_product_prices table
+        $manualPrice = VipProductPrice::where('customer_id', $this->id)
+            ->where('product_id', $productId)
+            ->when($variantId, function ($query) use ($variantId) {
+                return $query->where('product_variant_id', $variantId);
+            })
+            ->first();
+
+        if ($manualPrice) {
+            return $manualPrice->vip_price;
+        }
+
+        // 2. Apply percentage or fixed discount if applicable
+        if ($this->vip_discount_type && $this->vip_discount_value) {
+            // Check if discount applies to this product
+            if ($this->vip_apply_to == 'selected_products') {
+                // Check if this product has a manual price (meaning it's selected)
+                $hasManualPrice = VipProductPrice::where('customer_id', $this->id)
+                    ->where('product_id', $productId)
+                    ->exists();
+
+                if (!$hasManualPrice) {
+                    return null; // Product not selected for discount
+                }
+            }
+
+            // Get base price
+            $basePrice = $variant
+                ? ($variant->offer_price ?? $variant->price)
+                : ($product->offer_price ?? $product->price);
+
+            // Apply discount
+            if ($this->vip_discount_type == 'percentage') {
+                return $basePrice * (1 - $this->vip_discount_value / 100);
+            } else { // fixed discount
+                return max(0, $basePrice - $this->vip_discount_value);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get all VIP prices for this customer (including calculated ones)
+     */
+    public function getAllVipPrices()
+    {
+        $prices = [];
+
+        // Get manual prices
+        $manualPrices = $this->vipPrices()->with('product', 'variant')->get();
+
+        foreach ($manualPrices as $manualPrice) {
+            $key = $manualPrice->product_id . '_' . ($manualPrice->product_variant_id ?? '0');
+            $prices[$key] = [
+                'type' => 'manual',
+                'product_id' => $manualPrice->product_id,
+                'variant_id' => $manualPrice->product_variant_id,
+                'price' => $manualPrice->vip_price,
+                'product_name' => $manualPrice->product->name,
+                'variant_sku' => $manualPrice->variant->sku ?? null
+            ];
+        }
+
+        return $prices;
+    }
+
+    /**
+     * Assign VIP status with percentage discount for selected products
+     */
+    public function assignVipWithPercentage($percentage, $productIds = [], $expiryDate = null)
+    {
+        $this->update([
+            'is_vip' => true,
+            'vip_discount_type' => 'percentage',
+            'vip_discount_value' => $percentage,
+        ]);
+
+        // If selected products, create entries in vip_product_prices as markers
+        if (!empty($productIds) && $this->vip_apply_to == 'selected_products') {
+            foreach ($productIds as $productId) {
+                VipProductPrice::updateOrCreate(
+                    [
+                        'customer_id' => $this->id,
+                        'product_id' => $productId,
+                        'product_variant_id' => null
+                    ],
+                    [
+                        'vip_price' => 0 // Placeholder, actual price calculated on the fly
+                    ]
+                );
+            }
+        }
+    }
+
+    /**
+     * Assign VIP status with fixed discount for selected products
+     */
+    public function assignVipWithFixedDiscount($discountAmount, $productIds = [], $expiryDate = null)
+    {
+        $this->update([
+            'is_vip' => true,
+            'vip_discount_type' => 'fixed',
+            'vip_discount_value' => $discountAmount,
+        ]);
+
+        // If selected products, create entries in vip_product_prices as markers
+        if (!empty($productIds) && $this->vip_apply_to == 'selected_products') {
+            foreach ($productIds as $productId) {
+                VipProductPrice::updateOrCreate(
+                    [
+                        'customer_id' => $this->id,
+                        'product_id' => $productId,
+                        'product_variant_id' => null
+                    ],
+                    [
+                        'vip_price' => 0 // Placeholder, actual price calculated on the fly
+                    ]
+                );
+            }
+        }
+    }
+
+    /**
+     * Remove VIP status
+     */
+    public function removeVip()
+    {
+        // Delete all manual prices
+        $this->vipPrices()->delete();
+
+        // Reset VIP fields
+        $this->update([
+            'is_vip' => false,
+            'vip_discount_type' => null,
+            'vip_discount_value' => null
+        ]);
     }
 
 }

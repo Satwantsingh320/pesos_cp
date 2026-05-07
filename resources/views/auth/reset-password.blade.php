@@ -1,6 +1,6 @@
 @extends('layouts.master')
-@section('content')
 
+@section('content')
     <div class="account-pages my-5 pt-sm-5">
         <div class="container">
             <div class="row justify-content-center">
@@ -10,12 +10,12 @@
                             <div class="row">
                                 <div class="col-7">
                                     <div class="text-primary p-4">
-                                        <h5 class="text-primary">Restablecer contraseña</h5>
-                                        <p>Cambia tu contraseña</p>
+                                        <h5 class="text-primary">{{ __('website.reset_password_page_title') }}</h5>
+                                        <p>{{ __('website.reset_password_page_subtitle') }}</p>
                                     </div>
                                 </div>
                                 <div class="col-5 align-self-end">
-                                    <img src="{{ asset('assets/images/profile-img.png')}}" alt="" class="img-fluid">
+                                    <img src="{{ asset('assets/images/profile-img.png') }}" alt="" class="img-fluid">
                                 </div>
                             </div>
                         </div>
@@ -25,7 +25,7 @@
                                 <a href="{{ route('website.home') }}">
                                     <div class="avatar-md profile-user-wid mb-4">
                                         <span class="avatar-title rounded-circle bg-light">
-                                            <img src="{{ asset('assets/images/logo.svg')}}" alt="" class="rounded-circle"
+                                            <img src="{{ asset('assets/images/logo.svg') }}" alt="" class="rounded-circle"
                                                 height="34">
                                         </span>
                                     </div>
@@ -34,7 +34,7 @@
 
                             <div class="p-2">
                                 <div class="alert alert-success text-center mb-4" role="alert">
-                                    Restablece tu contraseña
+                                    {{ __('website.reset_password_alert') }}
                                 </div>
 
                                 <form method="POST" action="{{ route('password.update') }}">
@@ -43,48 +43,45 @@
                                     <input type="hidden" name="token" value="{{ $token }}">
 
                                     <div class="mb-3">
-                                        <label>Correo electrónico</label>
+                                        <label>{{ __('website.reset_password_email') }}</label>
                                         <input type="email" name="email" class="form-control"
                                             value="{{ $email ?? old('email') }}" required readonly>
                                     </div>
 
                                     <div class="mb-3">
-                                        <label>Nueva contraseña</label>
+                                        <label>{{ __('website.reset_password_new') }}</label>
                                         <input type="password" name="password" class="form-control" required>
                                     </div>
 
                                     <div class="mb-3">
-                                        <label>Confirmar contraseña</label>
+                                        <label>{{ __('website.reset_password_confirm') }}</label>
                                         <input type="password" name="password_confirmation" class="form-control" required>
                                     </div>
 
                                     <button class="btn btn-success w-100">
-                                        Restablecer contraseña
+                                        {{ __('website.reset_password_button') }}
                                     </button>
                                 </form>
                             </div>
-
                         </div>
                     </div>
 
                     <div class="mt-5 text-center">
                         <p>
-                            ¿La recuerdas?
+                            {{ __('website.reset_password_remember') }}
                             <a href="{{ route('login') }}" class="fw-medium text-primary">
-                                Inicia sesión aquí
+                                {{ __('website.reset_password_login') }}
                             </a>
                         </p>
 
                         <p>
-                            Pesos.Mx ©
+                            {{ config('app.name') }}©
                             <script>document.write(new Date().getFullYear())</script>
-                            {{ __('admin.design_and_develop_by') }} Intellisense Technology.
+                            {{ __('website.admin.design_and_develop_by') }} Intellisense Technology.
                         </p>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
-
 @endsection

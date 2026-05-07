@@ -78,13 +78,13 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'es'),
+    'locale' => env('APP_LOCALE', 'sv'),
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 
     'faker_locale' => env('APP_FAKER_LOCALE', 'es_MX'),
 
-    'locales' => ['en', 'es'],
+    'locales' => ['en', 'sv'],
 
     /*
     |--------------------------------------------------------------------------

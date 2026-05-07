@@ -8,6 +8,7 @@ use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Validator;
 
 class InventoryController extends Controller
 {
@@ -49,6 +50,142 @@ class InventoryController extends Controller
 
         return view('admin.inventory.create', compact('simpleProducts', 'variantProducts'));
     }
+
+    /**
+     * Show form for multiple upload inventory
+     */
+    public function createMultiple()
+    {
+        // Get simple products (has_variants = 0)
+        $simpleProducts = Product::where('status', 1)
+            ->where('has_variants', 0)
+            ->get();
+
+        // Get variant products (has_variants = 1)
+        $variantProducts = Product::where('status', 1)
+            ->where('has_variants', 1)
+            ->get();
+
+        return view('admin.inventory.create-multiple', compact('simpleProducts', 'variantProducts'));
+    }
+
+    /**
+     * Store multiple inventory transactions
+     */
+    public function storeMultiple(Request $request)
+    {
+        $rules = [
+            'inventory_items' => 'required|array|min:1',
+            'inventory_items.*.stock_type' => 'required|in:in,out',
+            'inventory_items.*.quantity' => 'required|integer|min:1'
+        ];
+
+        $request->validate($rules);
+
+        $successCount = 0;
+        $errorCount = 0;
+        $errors = [];
+
+        DB::beginTransaction();
+
+        try {
+            foreach ($request->inventory_items as $index => $item) {
+                try {
+                    // Validate item type
+                    if (isset($item['product_id']) && $item['product_id']) {
+                        $product = Product::find($item['product_id']);
+                        if (!$product) {
+                            throw new \Exception("Product not found for item #" . ($index + 1));
+                        }
+
+                        if ($product->has_variants) {
+                            throw new \Exception("Item #" . ($index + 1) . ": This product has variants. Please select a specific variant.");
+                        }
+
+                        $currentStock = $product->quantity ?? 0;
+                        $productId = $product->id;
+                        $variantId = null;
+
+                        if ($item['stock_type'] == 'in') {
+                            $updatedStock = $currentStock + $item['quantity'];
+                        } else {
+                            if ($currentStock < $item['quantity']) {
+                                throw new \Exception("Item #" . ($index + 1) . ": Insufficient stock. Current stock: " . $currentStock);
+                            }
+                            $updatedStock = $currentStock - $item['quantity'];
+                        }
+
+                        // Update product stock
+                        $product->quantity = $updatedStock;
+                        $product->save();
+
+                    } elseif (isset($item['variant_id']) && $item['variant_id']) {
+                        $variant = ProductVariant::find($item['variant_id']);
+                        if (!$variant) {
+                            throw new \Exception("Variant not found for item #" . ($index + 1));
+                        }
+
+                        $currentStock = $variant->quantity;
+                        $productId = $variant->product_id;
+                        $variantId = $variant->id;
+
+                        if ($item['stock_type'] == 'in') {
+                            $updatedStock = $currentStock + $item['quantity'];
+                        } else {
+                            if ($currentStock < $item['quantity']) {
+                                throw new \Exception("Item #" . ($index + 1) . ": Insufficient stock for variant. Current stock: " . $currentStock);
+                            }
+                            $updatedStock = $currentStock - $item['quantity'];
+                        }
+
+                        // Update variant stock
+                        $variant->quantity = $updatedStock;
+                        $variant->save();
+
+                        // Update product price range
+                        $variant->product->updatePriceRange();
+
+                    } else {
+                        throw new \Exception("Item #" . ($index + 1) . ": Please select either a product or a variant.");
+                    }
+
+                    // Create inventory record
+                    Inventory::create([
+                        'product_id' => $productId,
+                        'product_variant_id' => $variantId,
+                        'stock_type' => $item['stock_type'],
+                        'available_stock' => $currentStock,
+                        'quantity' => $item['quantity'],
+                        'updated_stock' => $updatedStock,
+                        'notes' => $item['notes'] ?? null,
+                        'reference_type' => 'bulk_upload',
+                        'reference_id' => null
+                    ]);
+
+                    $successCount++;
+
+                } catch (\Exception $e) {
+                    $errorCount++;
+                    $errors[] = $e->getMessage();
+                }
+            }
+
+            DB::commit();
+
+            $message = "Successfully processed {$successCount} inventory transactions.";
+            if ($errorCount > 0) {
+                $message .= " Failed: {$errorCount}. " . implode("; ", $errors);
+                return redirect()->route('inventory.create.multiple')->with('warning', $message);
+            }
+
+            return redirect()->route('inventory.index')->with('success', $message);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Failed to process inventory: ' . $e->getMessage());
+        }
+    }
+
     /**
      * Store inventory transaction
      */
@@ -252,6 +389,76 @@ class InventoryController extends Controller
         return response()->json([
             'success' => false,
             'message' => 'Product or variant not found'
+        ]);
+    }
+
+    /**
+     * Get variant details for bulk upload
+     */
+    public function getVariantDetails(Request $request)
+    {
+        $variantId = $request->variant_id;
+        $variant = ProductVariant::with('combinations.attributeValue', 'product')->find($variantId);
+
+        if (!$variant) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Variant not found'
+            ]);
+        }
+
+        $attributes = [];
+        foreach ($variant->combinations as $combination) {
+            $attributes[] = $combination->attributeValue->value;
+        }
+
+        return response()->json([
+            'success' => true,
+            'variant' => [
+                'id' => $variant->id,
+                'sku' => $variant->sku,
+                'current_stock' => $variant->quantity,
+                'price' => $variant->price,
+                'attributes' => implode(', ', $attributes),
+                'product_name' => $variant->product->name
+            ]
+        ]);
+    }
+
+    /**
+     * Parse CSV file for bulk upload
+     */
+    public function parseCSV(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt'
+        ]);
+
+        $file = $request->file('csv_file');
+        $handle = fopen($file->getPathname(), 'r');
+
+        $data = [];
+        $headers = fgetcsv($handle); // Skip headers
+
+        while (($row = fgetcsv($handle)) !== false) {
+            if (count($row) >= 5) {
+                $data[] = [
+                    'product_type' => trim($row[0]),
+                    'product_id' => trim($row[1]),
+                    'variant_id' => trim($row[2]),
+                    'stock_type' => trim($row[3]),
+                    'quantity' => (int) trim($row[4]),
+                    'notes' => isset($row[5]) ? trim($row[5]) : null
+                ];
+            }
+        }
+
+        fclose($handle);
+
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+            'count' => count($data)
         ]);
     }
 }

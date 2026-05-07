@@ -219,3 +219,249 @@ a {
     font-size: 16px;
 }
 
+     .details-box img {
+            max-width: 300px !important;
+            height: auto;
+        }
+
+        .qa-section {
+            background: #f8f9fa;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 25px;
+        }
+
+        .qa-scroll-box {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+
+        /* Modern Variant Selector Styles */
+        .variant-selector-modern {
+            background: #fff;
+            border-radius: 16px;
+            padding: 15px;
+            margin: 15px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .variant-group {
+            margin-bottom: 10px;
+        }
+
+        .variant-group-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .variant-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .variant-option-btn {
+            padding: 5px 15px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .variant-option-btn:hover {
+            border-color: #484949;
+            color: #0c0c0c;
+            transform: translateY(-2px);
+        }
+
+        .variant-option-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            text-decoration: line-through;
+        }
+
+        .variant-option-btn.disabled:hover {
+            transform: none;
+            border-color: #e0e0e0;
+        }
+
+        /* Color Swatch Styles */
+        .variant-swatch {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .variant-swatch:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .variant-option-btn.active {
+            background: #393939;
+            border-color: #040404;
+            color: white;
+        }
+
+        .variant-swatch.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .selected-variant-card {
+            background: linear-gradient(135deg, #0d0d0d 0%, #4b4b4b 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 10px;
+        }
+
+        .selected-variant-card .label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .selected-variant-card .value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .price-tag {
+            font-size: 22px;
+            font-weight: bold;
+            color: #191a19;
+        }
+
+        .stock-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .stock-badge.in-stock {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .stock-badge.low-stock {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .stock-badge.out-stock {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .variant-image {
+            transition: all 0.3s ease;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #0d0d0e;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .thumb-img.active-thumb {
+            border: 2px solid #007bff;
+            opacity: 1;
+        }
+            .select2-container .select2-selection--single .select2-selection__rendered {
+            color: var(--bs-emphasis-color);
+        }
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+        }
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+            color: white;
+            border-right: 1px solid rgba(255,255,255,0.3);
+        }
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+            background-color: rgba(255,255,255,0.2);
+            color: white;
+        }
+        .variant-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 1px solid #e9ecef;
+        }
+        .variant-header {
+            cursor: move;
+            background: #e9ecef;
+            margin: -15px -15px 15px -15px;
+            padding: 10px 15px;
+            border-radius: 8px 8px 0 0;
+        }
+        .remove-variant {
+            float: right;
+            cursor: pointer;
+            color: #dc3545;
+        }
+        .combination-badge {
+            display: inline-block;
+            background: #6c757d;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        .attribute-group {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+        .select2-container {
+            width: 100% !important;
+        }
+
+
+

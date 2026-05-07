@@ -99,3 +99,9 @@ input:checked+.slider:before {
     font-size: 14px;
     line-height: 1.4;
 }
+
+     .details-box img {
+            max-width: 300px !important;
+            height: auto;
+        }
+

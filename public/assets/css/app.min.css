@@ -311,7 +311,7 @@ body[data-layout="horizontal"] .footer {
 }
 .metismenu {
     margin: 0;
-    margin-top: 15%;
+    margin-top: 5%;
 }
 .metismenu li {
     display: block;
@@ -1184,10 +1184,10 @@ body[data-layout="horizontal"][data-layout-size="boxed"] .navbar-header {
     }
 } /*!
  * Waves v0.7.6
- * http://fian.my.id/Waves 
- * 
- * Copyright 2014-2018 Alfiana E. Sibuea and other contributors 
- * Released under the MIT license 
+ * http://fian.my.id/Waves
+ *
+ * Copyright 2014-2018 Alfiana E. Sibuea and other contributors
+ * Released under the MIT license
  * https://github.com/fians/Waves/blob/master/LICENSE */
 .waves-effect {
     position: relative;

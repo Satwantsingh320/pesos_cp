@@ -25,7 +25,7 @@ class Inventory extends Model
     ];
 
     public $sortEntity = 'inventories.id';
-    public $sortOrder = 'asc';
+    public $sortOrder = 'desc';
 
     protected $casts = [
         'quantity' => 'integer',

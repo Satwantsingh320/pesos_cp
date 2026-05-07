@@ -6,12 +6,14 @@
                 <x-product-card :product="$product" />
             </div>
         @endforeach
+
         @if ($products->hasPages())
             <div class="d-flex flex-column align-items-center mt-4 gap-2">
                 <p class="text-muted small mb-1">
-                    Showing {{ $products->firstItem() }} to
-                    {{ $products->lastItem() }} of
-                    {{ $products->total() }} Results
+                    {{ __('website.showing') }} {{ $products->firstItem() }}
+                    {{ __('website.to') }} {{ $products->lastItem() }}
+                    {{ __('website.of') }} {{ $products->total() }}
+                    {{ __('website.results') }}
                 </p>
                 {{ $products->links('pagination::bootstrap-4') }}
             </div>
@@ -19,6 +21,6 @@
     </div>
 @else
     <h2 style="text-align: center;">
-        No hay productos disponibles
+        {{ __('website.no_products_available') }}
     </h2>
 @endif

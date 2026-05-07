@@ -12,7 +12,10 @@
                         </div>
                     </div>
                     <div class="col-6">
-                        <div class="d-flex justify-content-end">
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{{ route('inventory.create.multiple') }}" class="btn btn-success btn-sm">
+                                <i class="bx bx-layer-plus"></i> {{ __('admin.multiple_upload') }}
+                            </a>
                             <a href="{{ route('inventory.create') }}" class="btn btn-primary btn-sm">
                                 <i class="bx bx-plus"></i> {{ __('admin.add_inventory') }}
                             </a>
@@ -37,9 +40,11 @@
                                     <label class="form-label">{{ __('admin.stock_type') }}</label>
                                     <select name="stock_type" class="form-select">
                                         <option value="">{{ __('admin.all') }}</option>
-                                        <option value="in" {{ request('stock_type') == 'in' ? 'selected' : '' }}>{{ __('admin.stock_in') }}
+                                        <option value="in" {{ request('stock_type') == 'in' ? 'selected' : '' }}>
+                                            {{ __('admin.stock_in') }}
                                         </option>
-                                        <option value="out" {{ request('stock_type') == 'out' ? 'selected' : '' }}>{{ __('admin.stock_out') }}
+                                        <option value="out" {{ request('stock_type') == 'out' ? 'selected' : '' }}>
+                                            {{ __('admin.stock_out') }}
                                         </option>
                                     </select>
                                 </div>

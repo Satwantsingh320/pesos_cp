@@ -1,42 +1,90 @@
 @php
     $pageType = 'inner';
-    $pageTitle = 'Productos';
-    $breadcrumbTitlecurrent = 'Productos';
+    $pageTitle = __('website.product_title');
+    $breadcrumbTitlecurrent = __('website.product_title');
 @endphp
-@extends('website.layouts.layouts')
-@section('content')
-    <style>
-        .qa-section {
-            background: #f8f9fa;
-            /* very light grey */
-            border: 1px solid #eee;
-            border-radius: 8px;
-            padding: 25px;
-        }
 
-        .qa-scroll-box {
-            max-height: 400px;
-            overflow-y: auto;
-            padding-right: 6px;
-        }
-    </style>
+@extends('website.layouts.layouts')
+
+@section('content')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.0/dist/fancybox/fancybox.css" />
-    <!-- ========= Product Time ======= -->
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
     <section id="product-time">
         <div class="container">
             @php
                 use App\Models\Wishlist;
+                use Illuminate\Support\Str;
 
                 $owner = auth('customer')->check()
-                    ? ['customers_id' => auth('customer')->id()]
+                    ? ['customer_id' => auth('customer')->id()]
                     : ['session_id' => session()->getId()];
 
                 $isWishlisted = Wishlist::where('product_id', $product->id)->where($owner)->exists();
-              @endphp
+
+                // Calculate price display for variant products
+                $hasVariants = $product->has_variants == 1 && $product->variants && $product->variants->count() > 0;
+                $variants = $hasVariants ? $product->variants()->with('combinations.attributeValue.attribute')->get() : collect();
+
+                // Build variant lookup arrays
+                $variantLookup = [];
+                $attributeOptions = [];
+
+                if ($hasVariants) {
+                    foreach ($variants as $variant) {
+                        $key = [];
+                        foreach ($variant->combinations as $combo) {
+                            if ($combo->attributeValue && $combo->attributeValue->attribute) {
+                                $attrName = $combo->attributeValue->attribute->name;
+                                $attrValue = $combo->attributeValue->value;
+                                $key[$attrName] = $attrValue;
+
+                                if (!isset($attributeOptions[$attrName])) {
+                                    $attributeOptions[$attrName] = [];
+                                }
+                                if (!in_array($attrValue, $attributeOptions[$attrName])) {
+                                    $attributeOptions[$attrName][] = $attrValue;
+                                }
+                            }
+                        }
+                        $keyString = json_encode($key);
+                        $variantLookup[$keyString] = $variant;
+                    }
+                }
+
+                // Get selected variant from URL
+                $selectedCombination = request()->get('variant');
+                $selectedVariant = null;
+
+                if ($selectedCombination && $hasVariants) {
+                    $selectedVariant = $variants->firstWhere('id', $selectedCombination);
+                }
+
+                if (!$selectedVariant && $hasVariants && $variants->count() > 0) {
+                    $selectedVariant = $variants->first();
+                }
+
+                $currentStock = $hasVariants
+                    ? ($selectedVariant ? $selectedVariant->quantity : $variants->sum('quantity'))
+                    : ($product->no_of_pieces_available ?? 0);
+
+                // Get selected attributes for display
+                $selectedAttributes = [];
+                if ($selectedVariant) {
+                    foreach ($selectedVariant->combinations as $combo) {
+                        if ($combo->attributeValue && $combo->attributeValue->attribute) {
+                            $selectedAttributes[$combo->attributeValue->attribute->name] = $combo->attributeValue->value;
+                        }
+                    }
+                }
+            @endphp
+
             <div class="row">
                 <div class="col-lg-6 col-sm-6">
                     <div class="product-image-wrapper position-relative">
-
                         {{-- Wishlist --}}
                         <a class="wishlist-toggle position-absolute" style="top:15px; left:15px; z-index:20;"
                             data-url="{{ route('wishlist.toggle', $product->id) }}" role="button">
@@ -44,160 +92,272 @@
                                 style="font-size:22px; color:black;"></i>
                         </a>
 
-                        {{-- Sale Tag --}}
-                        @if ($product->IsOnSale)
-                            <div class="sale-tag">
-                                <div class="sale-text">
-                                    <span>Oferta</span>
-                                </div>
-                            </div>
-                        @endif
-
                         {{-- Main Image --}}
                         <div class="main-image text-center">
                             <a data-fancybox="gallery" data-caption="{{ $product->name }}"
-                                href='{{ $product->CoverImageUrl }}'><img id="mainProductImage"
-                                    src="{{ $product->CoverImageUrl }}" class="img-fluid" alt="{{ $product->name }}"></a>
+                                href='{{ $selectedVariant && $selectedVariant->image ? asset('uploads/products/' . $selectedVariant->image) : $product->CoverImageUrl }}'>
+                                <img id="mainProductImage"
+                                    src="{{ $selectedVariant && $selectedVariant->image ? asset('uploads/products/' . $selectedVariant->image) : $product->CoverImageUrl }}"
+                                    class="img-fluid variant-image" alt="{{ $product->name }}">
+                            </a>
                         </div>
 
                         {{-- Thumbnails --}}
                         @if ($product->gallery->count())
                             <div class="thumbnail-wrapper mt-3 d-flex gap-2 flex-wrap">
-
                                 @foreach ($product->gallery as $key => $image)
                                     <a data-fancybox="gallery" data-caption="{{ $product->name }}"
-                                        href='{{ asset('uploads/products/' . $image->image) }}'><img
-                                            src="{{ asset('uploads/products/' . $image->image) }}"
+                                        href='{{ asset('uploads/products/' . $image->image) }}'>
+                                        <img src="{{ asset('uploads/products/' . $image->image) }}"
                                             class="img-thumbnail thumb-img @if ($key == 0) active-thumb @endif"
-                                            style="width:80px; cursor:pointer;" onclick="changeImage(this)"></a>
+                                            style="width:80px; cursor:pointer;" onclick="changeImage(this)">
+                                    </a>
                                 @endforeach
-
                             </div>
                         @endif
-
                     </div>
                 </div>
+
                 <div class="col-lg-6 col-sm-6">
                     <div class="product-list-view">
                         <h4>{{ $product->name }}</h4>
 
-                        <div class="product-price">
-                            <h4 class="mb-0">
-                                MX$ {{ number_format($product->DisplayPrice, 2) }}
-
-                                @if ($product->OriginalPrice)
-                                    <span class="price-cut">MX$ {{ number_format($product->OriginalPrice, 2) }}</span>
-                                @endif
-
-                            </h4>
-                            <small class="text-danger">Precios incluyen IVA</small>
+                        <div class="product-price mb-3">
+                            @if($hasVariants && $selectedVariant)
+                                <div class="d-flex align-items-center gap-3">
+                                    <span class="price-tag">
+                                        {{CURRENCY}}
+                                        {{ number_format($selectedVariant->offer_price ?? $selectedVariant->price, 2) }}
+                                    </span>
+                                    @if($selectedVariant->offer_price && $selectedVariant->offer_price < $selectedVariant->price)
+                                        <span class="text-muted">
+                                            <del>{{CURRENCY}} {{ number_format($selectedVariant->price, 2) }}</del>
+                                        </span>
+                                        <span class="badge bg-danger">
+                                            -{{ round((($selectedVariant->price - $selectedVariant->offer_price) / $selectedVariant->price) * 100) }}%
+                                        </span>
+                                    @endif
+                                </div>
+                            @else
+                                <div class="d-flex align-items-center gap-3">
+                                    <span class="price-tag">
+                                        {{CURRENCY}} {{ number_format($product->offer_price ?? $product->price, 2) }}
+                                    </span>
+                                    @if($product->offer_price && $product->offer_price < $product->price)
+                                        <span class="text-muted">
+                                            <del>{{CURRENCY}} {{ number_format($product->price, 2) }}</del>
+                                        </span>
+                                    @endif
+                                </div>
+                            @endif
+                            <small class="text-danger d-block">{{ __('website.prices_include_tax') }}</small>
                         </div>
 
+                        {{-- Modern Variant Selector --}}
+                        @if($hasVariants && $variants->count() > 0)
+                            <div class="variant-selector-modern">
+                                <form id="variantForm" method="GET"
+                                    action="{{ route('website.product.show', $product->slug) }}">
+                                    @foreach($attributeOptions as $attributeName => $values)
+                                        <div class="variant-group" data-attribute="{{ $attributeName }}">
+                                            <span class="variant-group-title">
+                                                @php
+                                                    $attrKey = strtolower($attributeName);
+                                                    $attributeLabel = match ($attrKey) {
+                                                        'color' => __('website.color'),
+                                                        'size' => __('website.size'),
+                                                        'material' => __('website.material'),
+                                                        default => $attributeName,
+                                                    };
+                                                @endphp
+                                                {{ $attributeLabel }}:
+                                            </span>
+                                            <div class="variant-options">
+                                                @foreach($values as $value)
+                                                    @php
+                                                        $matchingVariant = null;
+                                                        foreach ($variants as $variant) {
+                                                            $hasAttribute = $variant->combinations->contains(function ($combo) use ($attributeName, $value) {
+                                                                return $combo->attributeValue &&
+                                                                    $combo->attributeValue->attribute->name == $attributeName &&
+                                                                    $combo->attributeValue->value == $value;
+                                                            });
+                                                            if ($hasAttribute) {
+                                                                $matchingVariant = $variant;
+                                                                break;
+                                                            }
+                                                        }
+
+                                                        $isSelected = $selectedVariant && $selectedVariant->id == ($matchingVariant ? $matchingVariant->id : null);
+                                                        $isAvailable = $matchingVariant && $matchingVariant->quantity > 0;
+                                                        $isColor = strtolower($attributeName) == 'color';
+                                                    @endphp
+
+                                                    @if($isColor)
+                                                        <div class="variant-swatch {{ $isSelected ? 'active' : '' }} {{ !$isAvailable ? 'disabled' : '' }}"
+                                                            style="background-color: {{ strtolower($value) }};"
+                                                            data-attribute="{{ $attributeName }}" data-value="{{ $value }}"
+                                                            data-variant-id="{{ $matchingVariant ? $matchingVariant->id : '' }}"
+                                                            onclick="selectVariant('{{ $matchingVariant ? $matchingVariant->id : '' }}')"
+                                                            title="{{ $value }} {{ !$isAvailable ? '(' . __('website.out_of_stock_label') . ')' : '' }}">
+                                                        </div>
+                                                    @else
+                                                        <div class="variant-option-btn {{ $isSelected ? 'active' : '' }} {{ !$isAvailable ? 'disabled' : '' }}"
+                                                            data-attribute="{{ $attributeName }}" data-value="{{ $value }}"
+                                                            data-variant-id="{{ $matchingVariant ? $matchingVariant->id : '' }}"
+                                                            onclick="selectVariant('{{ $matchingVariant ? $matchingVariant->id : '' }}')">
+                                                            {{ $value }}
+                                                            @if(!$isAvailable)
+                                                                <small>{{ __('website.out_of_stock_label') }}</small>
+                                                            @endif
+                                                        </div>
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                    <input type="hidden" name="variant" id="selectedVariantId"
+                                        value="{{ $selectedVariant ? $selectedVariant->id : '' }}">
+                                </form>
+
+                                {{-- Selected Variant Info Card --}}
+                                @if($selectedVariant)
+                                    <div class="selected-variant-card">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div class="label">{{ __('website.sku') }}</div>
+                                                <div class="value">{{ $selectedVariant->sku }}</div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="label">{{ __('website.available_stock') }}</div>
+                                                <div class="value">{{ $selectedVariant->quantity }} {{ __('website.units') }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-12">
+                                                <div class="label">{{ __('website.selected_variant') }}</div>
+                                                <div class="value">
+                                                    @foreach($selectedAttributes as $attrName => $attrValue)
+                                                        @php
+                                                            $attrKey = strtolower($attrName);
+                                                            $attrLabel = match ($attrKey) {
+                                                                'color' => __('website.color'),
+                                                                'size' => __('website.size'),
+                                                                'material' => __('website.material'),
+                                                                default => $attrName,
+                                                            };
+                                                        @endphp
+                                                        {{ $attrLabel }}: {{ $attrValue }}@if(!$loop->last) | @endif
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
+
                         <div class="product-meta mt-0">
-
-                            {{-- Barcode --}}
-                            @if ($product->barcode_number)
-                                <svg id="barcode"></svg>
-                            @endif
-
-                            {{-- Brand --}}
                             @if ($product->brand)
-                                <p><strong>Marca:</strong> {{ $product->brand->name }}</p>
+                                <p><strong>{{ __('website.brand') }}:</strong> {{ $product->brand->name }}</p>
                             @endif
 
-                            {{-- Category --}}
                             @if ($product->category)
                                 <p>
-                                    <strong>Categoría:</strong>
+                                    <strong>{{ __('website.category') }}:</strong>
                                     {{ $product->category->name }}
-
                                     @if ($product->subcategory)
-                                        → {{ $product->subcategory->name }}
+                                        {{ __('website.category_link') }} {{ $product->subcategory->name }}
                                     @endif
                                 </p>
                             @endif
 
-                            {{-- SKU --}}
-                            @if ($product->sku_number)
-                                <p><strong>SKU:</strong> {{ $product->sku_number }}</p>
-                            @endif
                             @if ($product->type)
-                                <p><strong>Tipo:</strong> {{ $product->type }}</p>
+                                <p><strong>{{ __('website.type') }}:</strong> {{ $product->type }}</p>
                             @endif
-                            {{-- Shipping --}}
+
                             <p>
-                                <strong>Envío:</strong>
+                                <strong>{{ __('website.shipping') }}:</strong>
                                 @if ($product->shipping_fee > 0)
-                                    MX$ {{ number_format($product->shipping_fee, 2) }}
+                                    {{CURRENCY}} {{ number_format($product->shipping_fee, 2) }}
                                 @else
-                                    Envío Gratis
+                                    {{ __('website.free_shipping') }}
                                 @endif
                             </p>
-
-                            {{-- Delivery Time --}}
-                            @if ($product->estimated_delivery_time)
-                                <p>
-                                    <strong>Tiempo estimado de entrega:</strong>
-                                    {{ $product->estimated_delivery_time }} días
-                                </p>
-                            @endif
-
                         </div>
-                        @if ($product->no_of_pieces_available > 0)
-                            <div class="avaliable-stock">
-                                <h5>Disponible en stock</h5>
+
+                        {{-- Stock Status --}}
+                        @if ($currentStock > 0)
+                            <div class="mb-3">
+                                <span class="stock-badge in-stock">
+                                    <i class="fas fa-check-circle"></i> {{ __('website.in_stock') }}
+                                </span>
+                                @if($currentStock <= 10)
+                                    <span class="stock-badge low-stock ms-2">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        {{ __('website.only_left', ['count' => $currentStock]) }}
+                                    </span>
+                                @endif
                             </div>
                         @else
-                            <div class="out-stock">
-                                <h5>Agotado</h5>
+                            <div class="mb-3">
+                                <span class="stock-badge out-stock">
+                                    <i class="fas fa-times-circle"></i> {{ __('website.out_of_stock') }}
+                                </span>
                             </div>
                         @endif
+
+                        {{-- Description Preview --}}
                         <p>
-                            {!! Str::limit($product->description, 500) !!}
-                            @if (Str::length(strip_tags($product->description)) > 500)
-                                <a class="small link" href="#description">See More</a>
+                            {!! Str::limit(strip_tags($product->description), 300) !!}
+                            @if (Str::length(strip_tags($product->description)) > 300)
+                                <a class="small link" href="#description">{{ __('website.see_more') }}</a>
                             @endif
                         </p>
 
+                        {{-- Add to Cart Form --}}
                         <form class="ajax-form" data-type="productDetail" data-url="{{ route('website.cart.addCart') }}"
                             data-method="post">
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
+                            <input type="hidden" name="variant_id" id="variant_id"
+                                value="{{ $selectedVariant ? $selectedVariant->id : '' }}">
                             <input type="hidden" name="buy_now" id="buy_now" value="0">
-                            <div class="qty-box mt-4">
-                                <div class="quantity" data-context="product">
-                                    <a href="#" class="quantity__minus"><span><i class="fa-solid fa-minus"></i></span></a>
-                                    <input name="quantity" type="text" class="quantity__input" value="1" min="1"
-                                        max="{{ $product->no_of_pieces_available }}" readonly>
-                                    <a href="#" class="quantity__plus"><span><i class="fa-solid fa-plus"></i></span></a>
+
+                            @if($currentStock > 0 && (!$hasVariants || ($hasVariants && $selectedVariant)))
+                                <div class="qty-box mt-4">
+                                    <div class="quantity" data-context="product">
+                                        <a href="#" class="quantity__minus"><span><i class="fa-solid fa-minus"></i></span></a>
+                                        <input name="quantity" type="number" class="quantity__input" value="1" min="1"
+                                            max="{{ $currentStock }}" step="1">
+                                        <a href="#" class="quantity__plus"><span><i class="fa-solid fa-plus"></i></span></a>
+                                    </div>
                                 </div>
-                            </div>
+                            @endif
 
-
-                            <div class="qty-box-btn">
-                                {{-- //add to cart verify out of stock condition --}}
-                                @if ($product->no_of_pieces_available > 0)
-                                    {{-- <a href="#" type="button">Añadir al carrito</a> --}}
+                            <div class="qty-box-btn mt-3">
+                                @if ($currentStock > 0 && (!$hasVariants || ($hasVariants && $selectedVariant)))
                                     <button class="btn btn-primary" type="submit"
                                         onclick="document.getElementById('buy_now').value=1">
-                                        Comprar ahora
+                                        <i class="fas fa-bolt"></i> {{ __('website.buy_now') }}
                                     </button>
                                     <button class="btn btn-theme" type="submit"
                                         onclick="document.getElementById('buy_now').value=0">
-                                        Añadir al carrito
+                                        <i class="fas fa-cart-plus"></i> {{ __('website.add_to_cart') }}
                                     </button>
-
-
                                 @else
-                                    <button type="button" class="btn disabled" disabled="disabled">Agotado</button>
+                                    <button type="button" class="btn btn-secondary" disabled>
+                                        <i class="fas fa-times-circle"></i> {{ __('website.out_of_stock') }}
+                                    </button>
                                 @endif
-
                             </div>
                         </form>
+
                         <div id="cartAlert" class="alert alert-success alert-dismissible fade d-none mt-2" role="alert">
-                            <strong>¡Agregado al carrito!</strong> Este producto se ha añadido correctamente.
+                            <strong>{{ __('website.added_to_cart') }}</strong>
+                            {{ __('website.product_added_successfully') }}
                             <a role="button" href="{{ route('website.cart') }}" class="view-cart">
-                                Ver carrito
+                                {{ __('website.view_cart') }}
                             </a>
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
@@ -205,39 +365,37 @@
                 </div>
             </div>
 
+            {{-- Q&A Section --}}
             <div class="mt-5 qa-section">
-
-                <h4 class="mb-4">Preguntas de los clientes</h4>
+                <h4 class="mb-4">{{ __('website.customer_questions') }}</h4>
                 @if(session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 @endif
 
                 @if(session('error'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         {{ session('error') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 @endif
 
                 <form action="{{ route('product.questions.store') }}" method="POST" class="d-flex gap-2 align-items-center">
                     @csrf
                     <input type="hidden" name="product_id" value="{{ $product->id }}">
-
                     <textarea name="question" class="form-control flex-grow-1" rows="1" style="height: 38px; resize: none;"
-                        placeholder="Haz una pregunta sobre este producto..." required></textarea>
-
-                    <button class="btn btn-primary" type="submit" style="height: 38px;">Enviar pregunta</button>
+                        placeholder="{{ __('website.ask_question') }}" required></textarea>
+                    <button class="btn btn-primary" type="submit"
+                        style="height: 38px;">{{ __('website.submit_question') }}</button>
                 </form>
-                @if(($product->questions->count() > 0))
+
+                @if($product->questions->count() > 0)
                     <hr>
                     <div class="pe-2 qa-scroll-box">
                         @foreach($product->questions as $question)
-
                             <div class="mb-4">
-                                <strong class="d-none">{{ $question?->user?->name ?? ''}}</strong>
                                 <p><b>{{ $question->question }}</b></p>
                                 @if($question->answers->count())
                                     <div class="ps-3 border-start">
@@ -246,7 +404,6 @@
                                                 <p class="mb-1">{{ $answer->answer }}</p>
                                                 <small class="text-muted small">
                                                     {{ $answer->created_at->format('d-m-Y') }}
-                                                    <span class="d-none"> By {{ $answer?->user->name }} </span>
                                                 </small>
                                             </div>
                                         @endforeach
@@ -258,28 +415,27 @@
                 @endif
             </div>
 
-            @if (Str::length(strip_tags($product->description)) > 500)
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="details-box" id="description">
-                            <h4>Descripción del Producto</h4>
-                            {!! $product->description !!}
-                        </div>
+            {{-- Full Description --}}
+            <div class="row mt-4" id="description">
+                <div class="col-lg-12">
+                    <div class="details-box">
+                        <h4>{{ __('website.product_description') }}</h4>
+                        {!! $product->description !!}
                     </div>
                 </div>
-            @endif
+            </div>
         </div>
     </section>
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+
+       <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.0/dist/fancybox/fancybox.umd.js"></script>
     <script>
         Fancybox.bind("[data-fancybox='gallery']", {
             Thumbs: false,
             Toolbar: true
         });
-    </script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
+
+         document.addEventListener("DOMContentLoaded", function () {
             const barcodeValue = "{{ $product->barcode_number }}";
 
             if (barcodeValue) {
@@ -294,15 +450,21 @@
 
         function changeImage(element) {
             const mainImage = document.getElementById('mainProductImage');
-            mainImage.src = element.src;
+            const mainLink = mainImage.closest('a');
 
-            // Remove active class
-            document.querySelectorAll('.thumb-img').forEach(img => {
-                img.classList.remove('active-thumb');
-            });
+            if (mainImage && element) {
+                mainImage.src = element.src;
+                if (mainLink) {
+                    mainLink.href = element.parentElement.href;
+                }
 
-            element.classList.add('active-thumb');
+                document.querySelectorAll('.thumb-img').forEach(img => {
+                    img.classList.remove('active-thumb');
+                });
+                element.classList.add('active-thumb');
+            }
         }
+
 
     </script>
 @endsection

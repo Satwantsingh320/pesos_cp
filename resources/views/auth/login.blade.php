@@ -1,4 +1,5 @@
 @extends('layouts.master')
+
 @section('content')
     <div class="account-pages my-5 pt-sm-5">
         <div class="container">
@@ -9,8 +10,8 @@
                             <div class="row">
                                 <div class="col-7">
                                     <div class="text-primary p-4">
-                                        <h5 class="text-primary">Welcome To Pesos Admin!</h5>
-
+                                        <h5 class="text-primary">
+                                            {{ __('website.welcome_to_admin', ['name' => 'Vaak golvslip']) }}</h5>
                                     </div>
                                 </div>
                                 <div class="col-5 align-self-end">
@@ -41,20 +42,22 @@
                             <div class="p-2">
                                 <form class="form-horizontal" method="POST" action="{{ route('admin.login.post') }}">
                                     @csrf
+
                                     <div class="mb-3">
-                                        <label for="username" class="form-label">Email</label>
+                                        <label for="username" class="form-label">{{ __('website.email') }}</label>
                                         <input type="email" class="form-control" id="username" name="email"
-                                            placeholder="Enter email" required>
+                                            placeholder="{{ __('website.enter_email') }}" value="{{ old('email') }}" required>
                                     </div>
 
                                     <div class="mb-3">
-                                        <label class="form-label">Password</label>
+                                        <label class="form-label">{{ __('website.password') }}</label>
                                         <div class="input-group auth-pass-inputgroup">
                                             <input type="password" class="form-control" name="password"
-                                                placeholder="Enter password" aria-label="Password"
+                                                placeholder="{{ __('website.enter_password') }}" aria-label="Password"
                                                 aria-describedby="password-addon" required>
-                                            <button class="btn btn-light " type="button" id="password-addon"><i
-                                                    class="mdi mdi-eye-outline"></i></button>
+                                            <button class="btn btn-light" type="button" id="password-addon">
+                                                <i class="mdi mdi-eye-outline"></i>
+                                            </button>
                                         </div>
                                     </div>
 
@@ -64,62 +67,47 @@
                                         </div>
                                     @enderror
 
+                                    @if(session('error'))
+                                        <div class="mb-3">
+                                            <p class="text-danger" style="font-weight:500">{{ session('error') }}</p>
+                                        </div>
+                                    @endif
+
+                                    {{-- Remember me checkbox (commented) --}}
                                     {{-- <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" name="remember" id="remember-check">
-                                                        <label class="form-check-label" for="remember-check">
-                                                            Remember me
-                                                        </label>
-                                                    </div> --}}
+                                            <input class="form-check-input" type="checkbox" name="remember" id="remember-check">
+                                            <label class="form-check-label" for="remember-check">
+                                                {{ __('website.remember_me') }}
+                                    </label>
+                            </div> --}}
 
-                                    <div class="mt-3 d-grid">
-                                        <button class="btn btn-primary waves-effect waves-light" type="submit">Log
-                                            In</button>
-                                    </div>
-
-                                    {{-- <div class="mt-4 text-center">
-                                                        <h5 class="font-size-14 mb-3">Sign in with</h5>
-
-                                                        <ul class="list-inline">
-                                                            <li class="list-inline-item">
-                                                                <a href="javascript::void()" class="social-list-item bg-primary text-white border-primary">
-                                                                    <i class="mdi mdi-facebook"></i>
-                                                                </a>
-                                                            </li>
-                                                            <li class="list-inline-item">
-                                                                <a href="javascript::void()" class="social-list-item bg-info text-white border-info">
-                                                                    <i class="mdi mdi-twitter"></i>
-                                                                </a>
-                                                            </li>
-                                                            <li class="list-inline-item">
-                                                                <a href="javascript::void()" class="social-list-item bg-danger text-white border-danger">
-                                                                    <i class="mdi mdi-google"></i>
-                                                                </a>
-                                                            </li>
-                                                        </ul>
-                                                    </div>--}}
-
-                                    <div class="mt-4 text-center">
-                                        <a href="{{route('password.request')}}" class="text-muted"><i
-                                                class="mdi mdi-lock me-1"></i> Forgot your password?</a>
-                                    </div>
-                                </form>
+                            <div class="mt-3 d-grid">
+                                <button class="btn btn-primary waves-effect waves-light" type="submit">
+                                    {{ __('website.log_in') }}
+                                </button>
                             </div>
 
+                            <div class="mt-4 text-center">
+                                <a href="{{ route('password.request') }}" class="text-muted">
+                                    <i class="mdi mdi-lock me-1"></i> {{ __('website.forgot_password') }}
+                                </a>
+                            </div>
+                            </form>
                         </div>
                     </div>
-                    <div class="mt-5 text-center">
+                </div>
 
-                        <div>
-                            {{-- <p>Don't have an account ? <a href="auth-register.html" class="fw-medium text-primary"> Signup now </a> </p> --}}
-                            <p>©
-                                <script>document.write(new Date().getFullYear())</script> PESOS Reservados todos los
-                                derechos <i class="mdi mdi-heart text-danger"></i> by Intellisense Technology
-                            </p>
-                        </div>
+                <div class="mt-5 text-center">
+                    <div>
+                        <p>{{ config('app.name') }}©
+                            <script>document.write(new Date().getFullYear())</script>
+                            {{ __('website.copyright') }}
+                            <i class="mdi mdi-heart text-danger"></i> {{ __('website.by') }} Intellisense Technology
+                        </p>
                     </div>
-
                 </div>
             </div>
         </div>
+    </div>
     </div>
 @endsection

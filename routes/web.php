@@ -11,14 +11,14 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\OfferController;
+
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
-use App\Http\Controllers\PromoCodeController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\RefundRequestController;
 use App\Http\Controllers\SubCategoryController;
 use App\Http\Controllers\ProductQuestionController;
-use App\Http\Controllers\SliderController;
+use App\Http\Controllers\VipController;
 use App\Http\Controllers\Website\CartController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -44,111 +44,118 @@ Route::get('migrate-up', function () {
     dd('migration done');
 });
 
-Route::prefix('admin')->name('admin.')->middleware('guest')->group(function () {
-    Route::get('', [AuthController::class, 'showLoginForm'])->name('login');
-    Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
-    Route::post('login', [AuthController::class, 'login'])->name('login.post');
-});
 
 
-Route::prefix('admin')->middleware('auth:web')->group(function () {
-    Route::get('/change-language/{lang}', function ($lang) {
-        if (!in_array($lang, config('app.locales'))) {
-            abort(400);
-        }
-        session()->put('locale', $lang);
-        return redirect()->back();
-    })->name('change.language');
+Route::prefix('admin')->group(function () {
+    Route::get('', [AuthController::class, 'showLoginForm'])->name('admin.login');
 
-    Route::get('/product-questions', [ProductQuestionController::class, 'index'])->name('admin.product.questions');
-    Route::post('/product-questions/answer', [ProductQuestionController::class, 'answer'])->name('admin.product.question.answer');
-    Route::post('/product-questions/toggle-status', [ProductQuestionController::class, 'toggleStatus'])->name('admin.product.question.toggle-status');
-
-    Route::get('export/{page}', [ExportController::class, 'export'])->name('export');
-
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
-    Route::get('/dashboard/orders-graph', [DashboardController::class, 'ordersGraph']);
-
-    Route::get('/profile', [SettingController::class, 'profile'])->name('profile');
-    Route::post("/profile/update", [SettingController::class, 'updateProfile'])->name('profile.update');
-    Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
-
-    //Category
-    Route::resource('category', CategoryController::class);
-    Route::post('category/status/{id?}', [CategoryController::class, 'status'])->name('category.status');
-    Route::post('category/toggle-all-status/{status?}', [CategoryController::class, 'toggleAllStatus'])->name('category.toggle-all-status');
-
-    //Subcategory
-    Route::resource('subcategory', SubCategoryController::class);
-    Route::post('subcategory/service', [SubCategoryController::class, 'service'])->name('subcategory.service');
-    Route::post('subcategory/status/{id?}', [SubCategoryController::class, 'status'])->name('subcategory.status');
-    Route::post('subcategory/toggle-all-status/{status?}', [SubCategoryController::class, 'toggleAllStatus'])->name('subcategory.toggle-all-status');
-
-    //Brand
-    Route::resource('brands', BrandController::class);
-    Route::post('brands/status/{id?}', [BrandController::class, 'status'])->name('brands.status');
-    Route::post('brands/toggle-all-status/{status?}', [BrandController::class, 'toggleAllStatus'])->name('brands.toggle-all-status');
-
-    //Products
-    Route::resource('products', ProductController::class);
-    Route::post('products/status/{id?}', [ProductController::class, 'status'])->name('products.status');
-    Route::post('products/toggle-all-status/{status?}', [ProductController::class, 'toggleAllStatus'])->name('products.toggle-all-status');
-    Route::post('products/service', [ProductController::class, 'service'])->name('products.service');
-    Route::post('products/get-price', [ProductController::class, 'getPrice'])->name('products.get-price');
-
-
-    //Customers
-    Route::resource('customers', CustomerController::class);
-    Route::post('customers/status/{id?}', [CustomerController::class, 'status'])->name('customers.status');
-    Route::post('customers/toggle-all-status/{status?}', [CustomerController::class, 'toggleAllStatus'])->name('customers.toggle-all-status');
-
-    //Orders
-    Route::resource('orders', OrderController::class);
-    Route::post('/orders/update-tracking', [OrderController::class, 'updateTracking'])->name('orders.updateTracking');
-    Route::post('orders/update-order-status', [OrderController::class, 'updateOrderStatus'])
-        ->name('orders.update-order-status');
-    //Settings
-    Route::get('settings', [SettingController::class, 'getSettings'])->name('settings.get-settings');
-    Route::post('settings/update/{id}', [SettingController::class, 'updateSettings'])->name('settings.update');
-
-    //Special Offers
-    Route::resource('offers', OfferController::class);
-    Route::post('offers/status/{id?}', [OfferController::class, 'status'])->name('offers.status');
-    Route::post('offers/toggle-all-status/{status?}', [OfferController::class, 'toggleAllStatus'])->name('offers.toggle-all-status');
-
-    //Inventory
-    Route::prefix('inventory')->group(function () {
-        Route::get('/', [InventoryController::class, 'index'])->name('inventory.index');
-        Route::get('/create', [InventoryController::class, 'create'])->name('inventory.create');
-        Route::post('/store', [InventoryController::class, 'store'])->name('inventory.store');
-        Route::get('/{id}', [InventoryController::class, 'show'])->name('inventory.show');
-        Route::post('/get-variants', [InventoryController::class, 'getVariants'])->name('inventory.getVariants');
-        Route::post('/get-stock-info', [InventoryController::class, 'getStockInfo'])->name('inventory.getStockInfo');
+    Route::middleware('guest:web')->group(function () {
+        Route::get('/login', [AuthController::class, 'showLoginForm']);
+        Route::post('/login', [AuthController::class, 'login'])->name('admin.login.post');
     });
 
-    //Promo Codes
-    Route::resource('promo-codes', PromoCodeController::class);
-    Route::post('promo-codes/status/{id?}', [PromoCodeController::class, 'status'])->name('promo-codes.status');
-    Route::post('promo-codes/toggle-all-status/{status?}', [PromoCodeController::class, 'toggleAllStatus'])->name('promo-codes.toggle-all-status');
+    Route::middleware('auth:web')->group(function () {
+        Route::get('/change-language/{lang}', function ($lang) {
+            if (!in_array($lang, config('app.locales'))) {
+                abort(400);
+            }
+            session()->put('locale', $lang);
+            return redirect()->back();
+        })->name('change.language');
 
-    //Refund Request
-    Route::get('/refunds-list', [RefundRequestController::class, 'adminIndex'])->name('admin.refund.index');
-    Route::post('/refunds/{refund}/approve', [RefundRequestController::class, 'approve'])->name('admin.refund.approve');
-    Route::post('/refunds/{refund}/reject', [RefundRequestController::class, 'reject'])->name('admin.refund.reject');
-    Route::post('/refunds/{refund}/receive', [RefundRequestController::class, 'markReceived'])->name('admin.refund.receive');
-    Route::post('/refunds/{refund}/process', [RefundRequestController::class, 'processRefund'])->name('admin.refund.process');
+        Route::get('/product-questions', [ProductQuestionController::class, 'index'])->name('admin.product.questions');
+        Route::post('/product-questions/answer', [ProductQuestionController::class, 'answer'])->name('admin.product.question.answer');
+        Route::post('/product-questions/toggle-status', [ProductQuestionController::class, 'toggleStatus'])->name('admin.product.question.toggle-status');
 
-    //notifications
-    Route::post('/notifications/read/{id}', [AuthController::class, 'markAsRead'])->name('admin.notifications.read');
-    Route::get('/notifications', [AuthController::class, 'notifications'])->name('admin.notifications.index');
-    Route::post('/notifications/read-all', [AuthController::class, 'markAllAsRead'])->name('admin.notifications.readAll');
+        Route::get('export/{page}', [ExportController::class, 'export'])->name('export');
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+        Route::get('/dashboard/orders-graph', [DashboardController::class, 'ordersGraph']);
 
+        Route::get('/profile', [SettingController::class, 'profile'])->name('profile');
+        Route::post("/profile/update", [SettingController::class, 'updateProfile'])->name('profile.update');
+        Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+
+        //Category
+        Route::resource('category', CategoryController::class);
+        Route::post('category/status/{id?}', [CategoryController::class, 'status'])->name('category.status');
+        Route::post('category/toggle-all-status/{status?}', [CategoryController::class, 'toggleAllStatus'])->name('category.toggle-all-status');
+
+        //Subcategory
+        Route::resource('subcategory', SubCategoryController::class);
+        Route::post('subcategory/service', [SubCategoryController::class, 'service'])->name('subcategory.service');
+        Route::post('subcategory/status/{id?}', [SubCategoryController::class, 'status'])->name('subcategory.status');
+        Route::post('subcategory/toggle-all-status/{status?}', [SubCategoryController::class, 'toggleAllStatus'])->name('subcategory.toggle-all-status');
+
+        //Brand
+        Route::resource('brands', BrandController::class);
+        Route::post('brands/status/{id?}', [BrandController::class, 'status'])->name('brands.status');
+        Route::post('brands/toggle-all-status/{status?}', [BrandController::class, 'toggleAllStatus'])->name('brands.toggle-all-status');
+
+        //Products
+        Route::resource('products', ProductController::class);
+        Route::post('products/status/{id?}', [ProductController::class, 'status'])->name('products.status');
+        Route::post('products/toggle-all-status/{status?}', [ProductController::class, 'toggleAllStatus'])->name('products.toggle-all-status');
+        Route::post('products/service', [ProductController::class, 'service'])->name('products.service');
+        Route::post('products/get-price', [ProductController::class, 'getPrice'])->name('products.get-price');
+
+
+        //Customers
+        Route::resource('customers', CustomerController::class);
+        Route::post('customers/status/{id?}', [CustomerController::class, 'status'])->name('customers.status');
+        Route::post('customers/toggle-all-status/{status?}', [CustomerController::class, 'toggleAllStatus'])->name('customers.toggle-all-status');
+
+        //Orders
+        Route::resource('orders', OrderController::class);
+        Route::post('/orders/update-tracking', [OrderController::class, 'updateTracking'])->name('orders.updateTracking');
+        Route::post('orders/update-order-status', [OrderController::class, 'updateOrderStatus'])
+            ->name('orders.update-order-status');
+        //Settings
+        Route::get('settings', [SettingController::class, 'getSettings'])->name('settings.get-settings');
+        Route::post('settings/update/{id}', [SettingController::class, 'updateSettings'])->name('settings.update');
+
+        //Special Offers
+        Route::resource('offers', OfferController::class);
+        Route::post('offers/status/{id?}', [OfferController::class, 'status'])->name('offers.status');
+        Route::post('offers/toggle-all-status/{status?}', [OfferController::class, 'toggleAllStatus'])->name('offers.toggle-all-status');
+
+        //Inventory
+        Route::post('update-inventory', [ProductController::class, 'updateInventory'])->name('update-inventory');
+        Route::prefix('inventory')->name('inventory.')->group(function () {
+            Route::get('/', [InventoryController::class, 'index'])->name('index');
+            Route::get('/create', [InventoryController::class, 'create'])->name('create');
+            Route::post('/store', [InventoryController::class, 'store'])->name('store');
+            Route::get('/create-multiple', [InventoryController::class, 'createMultiple'])->name('create.multiple');
+            Route::post('/store-multiple', [InventoryController::class, 'storeMultiple'])->name('store.multiple');
+            Route::post('/get-variants', [InventoryController::class, 'getVariants'])->name('getVariants');
+            Route::post('/get-stock-info', [InventoryController::class, 'getStockInfo'])->name('getStockInfo');
+            Route::post('/get-variant-details', [InventoryController::class, 'getVariantDetails'])->name('getVariantDetails');
+            Route::post('/parse-csv', [InventoryController::class, 'parseCSV'])->name('parseCsv');
+            Route::get('/{id}', [InventoryController::class, 'show'])->name('show');
+        });
+
+        // VIP Management Routes
+        Route::prefix('vip')->name('admin.vip.')->group(function () {
+            Route::get('/', [VipController::class, 'index'])->name('index');
+            Route::post('/assign', [VipController::class, 'assignVip'])->name('assign');
+            Route::put('/update/{id}', [VipController::class, 'updateVip'])->name('update');
+            Route::delete('/remove/{id}', [VipController::class, 'removeVip'])->name('remove');
+            Route::get('/{id}/edit', [VipController::class, 'getEditData'])->name('edit');
+            Route::get('/{id}/prices', [VipController::class, 'getCustomerPrices'])->name('prices');
+            Route::post('/manual-price', [VipController::class, 'setManualPrice'])->name('manual-price');
+            Route::delete('/manual-price/{id}', [VipController::class, 'deleteManualPrice'])->name('manual-price.delete');
+            Route::get('/product/{id}/variants', [VipController::class, 'getProductVariants'])->name('product.variants');
+            Route::get('/product/{id}/price', [VipController::class, 'getProductPrice'])->name('product.price');
+            Route::get('/vip/customer/{id}/products', [VipController::class, 'getCustomerProducts'])->name('customer.products');
+        });
+
+        //notifications
+        Route::post('/notifications/read/{id}', [AuthController::class, 'markAsRead'])->name('admin.notifications.read');
+        Route::get('/notifications', [AuthController::class, 'notifications'])->name('admin.notifications.index');
+        Route::post('/notifications/read-all', [AuthController::class, 'markAllAsRead'])->name('admin.notifications.readAll');
+    });
 });
 
 Route::middleware('guest')->group(function () {
-    Route::get('/terms', [AuthController::class, 'terms'])->name('terms');
-    Route::get('/privacy-policy', [AuthController::class, 'privacyPolicy'])->name('privacyPolicy');
-    Route::get('/return-policy', [AuthController::class, 'returnPolicy'])->name('returnPolicy');
     Route::get('/login', [AuthController::class, 'showLoginFormWebsite'])->name('login');
     Route::post('/login', [AuthController::class, 'loginWebsite'])->name('login.post');
     Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
@@ -157,15 +164,8 @@ Route::middleware('guest')->group(function () {
     Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
     Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
     Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('password.update');
-    Route::prefix('wishlist')->group(function () {
-        Route::get('/', [WishlistController::class, 'index'])->name('wishlist.index');
-        Route::post('/toggle/{product}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
-    });
     Route::post('/product/question/store', [WebsiteProductController::class, 'store'])->name('product.questions.store');
 });
-
-
-
 
 Route::name('website.')->group(function () {
     Route::get('/', [WebsiteHomeController::class, 'index'])->name('home');
@@ -189,6 +189,8 @@ Route::name('website.')->group(function () {
     })->name('checkout-cancel');
     Route::get('contact-us', [WebsiteHomeController::class, 'contactUs'])->name('contact-us');
     Route::post('send-contact-ticket', [WebsiteHomeController::class, 'createTicket'])->name('createTicket');
+    Route::post('/lang/switch', [WebsiteHomeController::class, 'switchLang'])->name('lang.switch');
+
 });
 
 Route::middleware('auth:customer')->group(function () {
@@ -202,4 +204,13 @@ Route::middleware('auth:customer')->group(function () {
     Route::get('/order-details/{id}', [CustomerController::class, 'orderDetail'])->name('customer.order.details');
     Route::post('/refund/request', [RefundRequestController::class, 'store'])->name('customer.refund.request');
     Route::get('/refunds', [RefundRequestController::class, 'customerIndex'])->name('customer.refund.index');
+
+});
+
+Route::get('/terms', [AuthController::class, 'terms'])->name('terms');
+Route::get('/privacy-policy', [AuthController::class, 'privacyPolicy'])->name('privacyPolicy');
+Route::get('/return-policy', [AuthController::class, 'returnPolicy'])->name('returnPolicy');
+Route::prefix('wishlist')->group(function () {
+    Route::get('/', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/toggle/{product}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 });

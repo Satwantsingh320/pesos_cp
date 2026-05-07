@@ -38,7 +38,32 @@
             <td>{{ $row->category->name }}</td>
             <td style="max-width:300px; white-space:normal;">{{ $row->name }}</td>
             <td>{{ $row->sku_number }}</td>
-            <td>{{ $row->no_of_pieces_available }}</td>
+            <td>
+                @php
+                    // Calculate total stock for variant products
+                    if($row->has_variants) {
+                        $totalStock = $row->variants->sum('quantity');
+                        $stockClass = $totalStock <= 0 ? 'danger' : ($totalStock <= 10 ? 'warning' : 'success');
+                        $lowStockVariants = $row->variants->filter(function($variant) {
+                            return $variant->quantity <= 10;
+                        });
+                    } else {
+                        $totalStock = $row->no_of_pieces_available ?? 0;
+                        $stockClass = $totalStock <= 0 ? 'danger' : ($totalStock <= 10 ? 'warning' : 'success');
+                    }
+                @endphp
+  <span class="badge bg-{{ $stockClass }} product-stock-badge"
+                                                      data-product-id="{{ $row->id }}"
+                                                      data-has-variants="{{ $row->has_variants }}">
+                                                    {{ number_format($totalStock) }}
+                                                </span>
+            @if($row->has_variants && isset($lowStockVariants) && $lowStockVariants->count() > 0)
+                                                    <br>
+                                                    <small class="text-warning">
+                                                        <i class="bx bx-error-circle"></i>
+                                                        {{ $lowStockVariants->count() }} {{ __('admin.variants_low_stock') }}
+                                                    </small>
+                                                @endif</td>
             <td>{!! statusSlider('products.status', $row->id, $row->status) !!}</td>
             <!-- <td>
                             @if ($row->status == 1)
@@ -51,9 +76,68 @@
               <a href="{{ route('products.show', $row->id) }}"
                 class="btn btn-primary btn-sm btn-rounded waves-effect waves-light">{{ __('admin.view_details') }} <i
                   class="bx bx-link-external"></i></a>
-              <button type="button" data-bs-toggle="modal" data-bs-target="#manageInventoryModal"
-                data-stock="{{ $row->no_of_pieces_available }}" data-product-id="{{ $row->id }}"
-                class="btn btn-success btn-sm btn-rounded waves-effect waves-light addOrder-modal">{{ __('admin.manage_inventory') }}</button>
+                                                  @if(!$row->has_variants)
+                                                        <!-- Simple Product Inventory Button -->
+                                                        <button type="button"
+                                                                class="btn btn-success btn-sm manage-inventory-btn"
+                                                                data-item-type="simple"
+                                                                data-product-id="{{ $row->id }}"
+                                                                data-stock="{{ $row->no_of_pieces_available ?? 0 }}"
+                                                                data-sku="{{ $row->sku_number }}"
+                                                                data-product-name="{{ $row->name }}"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#manageInventoryModal"
+                                                                title="{{ __('admin.manage_inventory') }}">
+                                                            <i class="bx bx-package"></i>
+                                                        </button>
+                                                    @else
+                                                        <!-- Variant Product: Show variants dropdown -->
+                                                        <div class="dropdown d-inline-block">
+                                                            <button class="btn btn-success btn-sm dropdown-toggle"
+                                                                    type="button"
+                                                                    data-bs-toggle="dropdown"
+                                                                    title="{{ __('admin.manage_inventory') }}">
+                                                                <i class="bx bx-package"></i>
+                                                            </button>
+                                                            <ul class="dropdown-menu">
+                                                                <li>
+                                                                    <h6 class="dropdown-header">{{ __('admin.select_variant') }}</h6>
+                                                                </li>
+                                                                @foreach($row->variants as $variant)
+                                                                    @php
+                                                                        $attributes = [];
+                                                                        if($variant->combinations) {
+                                                                            foreach($variant->combinations as $combo) {
+                                                                                if($combo->attributeValue) {
+                                                                                    $attributes[] = $combo->attributeValue->value;
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                        $attributeText = implode(', ', $attributes);
+                                                                    @endphp
+                                                                    <li>
+                                                                        <button type="button"
+                                                                                class="dropdown-item manage-inventory-btn"
+                                                                                data-item-type="variant"
+                                                                                data-variant-id="{{ $variant->id }}"
+                                                                                data-product-id="{{ $row->id }}"
+                                                                                data-stock="{{ $variant->quantity }}"
+                                                                                data-sku="{{ $variant->sku }}"
+                                                                                data-product-name="{{ $row->name }} - {{ $attributeText }}"
+                                                                                data-bs-toggle="modal"
+                                                                                data-bs-target="#manageInventoryModal">
+                                                                            <i class="bx bx-box"></i>
+                                                                            {{ $variant->sku }} - Stock: {{ $variant->quantity }}
+                                                                            @if($attributeText)
+                                                                                <br>
+                                                                                <small class="text-muted">{{ $attributeText }}</small>
+                                                                            @endif
+                                                                        </button>
+                                                                    </li>
+                                                                @endforeach
+                                                            </ul>
+                                                        </div>
+                                                    @endif
 
               <a style="cursor: pointer;color:blue" title="{!! __('admin.edit') !!}"
                 class="btn btn-outline-primary btn-sm" href="{{ route('products.edit', $row->id) }}"><i

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\App;
 class HomeController extends Controller
 {
     public function index()
@@ -86,6 +87,17 @@ class HomeController extends Controller
             return redirect()->route('website.contact-us');
         }
 
+    }
+
+    public function switchLang(Request $request)
+    {
+        $request->validate([
+            'locale' => 'required|in:en,es,sv'
+        ]);
+        $locale = $request->input('locale');
+        Session::put('locale', $locale);
+        App::setLocale($locale);
+        return response()->json(['success' => true, 'locale' => $locale]);
     }
 
 }

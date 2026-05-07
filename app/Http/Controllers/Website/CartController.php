@@ -14,16 +14,30 @@ use App\Services\CartService;
 use Illuminate\Http\Request;
 use App\Mail\OrderInvoiceMail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 
 class CartController extends Controller
 {
     public function addToCart(Request $request, CartService $cartService)
     {
         try {
+            $validator = Validator::make($request->all(), [
+                'product_id' => 'required|exists:products,id',
+                'quantity' => 'required|integer|min:1',
+                'variant_id' => 'nullable|exists:product_variants,id'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $validator->errors()->first()
+                ], 422);
+            }
+
             if ($request->buy_now) {
                 $cartService->clear();
             }
-            $cartService->addToCart($request->product_id, $request->quantity);
+            $cartService->addToCart($request->product_id, $request->quantity, $request->variant_id);
             $cartcount = $cartService->cartCount();
             if ($request->buy_now) {
                 return response()->json([
@@ -138,38 +152,66 @@ class CartController extends Controller
             'cart_item_id' => 'required|exists:cart_items,id',
             'quantity' => 'required|integer|min:1'
         ]);
+
         $cart = $cartService->getCart();
         $item = $cart->items()->findOrFail($request->cart_item_id);
-        //stock validation
-        if ($request->quantity > $item->product->no_of_pieces_available) {
-            return WebsiteHelper::WebsiteApiResponse(
-                false,
-                'Only ' . $item->product->no_of_pieces_available . ' items available',
-                [],
-                400
-            );
+
+        // Get product and variant info
+        $product = $item->product;
+        $maxStock = 0;
+
+        // Check if item has variant
+        if ($item->variant_id && $item->variant) {
+            $variant = $item->variant;
+            $maxStock = $variant->quantity;
+
+            // Stock validation for variant
+            if ($request->quantity > $maxStock) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only ' . $maxStock . ' items available for this variant',
+                    'max_stock' => $maxStock
+                ], 400);
+            }
+        } else {
+            // Simple product stock validation
+            $maxStock = $product->no_of_pieces_available ?? 0;
+
+            if ($request->quantity > $maxStock) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only ' . $maxStock . ' items available',
+                    'max_stock' => $maxStock
+                ], 400);
+            }
         }
+
+        // Update quantity
         $item->quantity = $request->quantity;
         $item->total = $item->quantity * $item->price_at_time;
         $item->save();
-        //recalulate billing summary again (carts table)
+
+        // Recalculate cart totals
         $cartService->recalculateCart($cart);
-        $cartcount = $cartService->cartCount();
-        return
-            WebsiteHelper::WebsiteApiResponse(
-                true,
-                __('admin.Cart updated'),
-                [
-                    'item_total' => CURRENCY . number_format($item->total, 2),
-                    'subtotal' => CURRENCY . number_format($cart->subtotal, 2),
-                    'discount' => CURRENCY . number_format($cart->discount_amount, 2),
-                    'tax' => CURRENCY . number_format($cart->tax_amount, 2),
-                    'shipping' => CURRENCY . number_format($cart->shipping_amount, 2),
-                    'grand_total' => CURRENCY . number_format($cart->grand_total - $cart->discount_amount, 2),
-                    'cart_count' => $cartcount,
-                ],
-                200
-            );
+        $cartCount = $cartService->cartCount();
+
+        // Calculate grand total correctly
+        $grandTotal = $cart->subtotal + $cart->tax_amount + $cart->shipping_amount - ($cart->discount_amount ?? 0);
+
+        // Return data directly without nesting
+        return response()->json([
+            'success' => true,
+            'message' => __('admin.Cart updated'),
+            'item_total' => '{{CURRENCY}} ' . number_format($item->total, 2),
+            'subtotal' => '{{CURRENCY}} ' . number_format($cart->subtotal, 2),
+            'discount' => '{{CURRENCY}} ' . number_format($cart->discount_amount ?? 0, 2),
+            'tax' => '{{CURRENCY}} ' . number_format($cart->tax_amount, 2),
+            'shipping' => '{{CURRENCY}} ' . number_format($cart->shipping_amount, 2),
+            'grand_total' => '{{CURRENCY}} ' . number_format($grandTotal, 2),
+            'cart_count' => $cartCount,
+            'item_quantity' => $item->quantity,
+            'max_stock' => $maxStock
+        ], 200);
     }
     //delete cart item
     public function removeItem(Request $request, CartService $cartService)

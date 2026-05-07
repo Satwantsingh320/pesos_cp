@@ -73,12 +73,12 @@
                     <!-- HEADER -->
                     <div class="d-flex justify-content-between mb-4">
                         <div>
-                            <h3 class="fw-bold mb-1">PESOS.MX</h3>
+                            <h3 class="fw-bold mb-1">vaakgolvslip.se</h3>
                             <p class="mb-0 text-muted">
                                 Campo 8,<br>
                                 Km 29 Corredor Comercial Cuauhtémoc <br>
                                 Chihuahua Cp: 31614<br>
-                                +52 614 215 9366
+                                +46 614 215 9366
                             </p>
                         </div>
 
@@ -175,9 +175,9 @@
                                         <small class="text-muted">ID: #{{ $item->product_id }}</small>
                                     </td>
                                     <td class="text-center">{{ $item->quantity }}</td>
-                                    <td class="text-end">MX${{ number_format($item->price, 2) }}</td>
+                                    <td class="text-end">{{CURRENCY}}{{ number_format($item->price, 2) }}</td>
                                     <td class="text-end fw-bold">
-                                        MX${{ number_format($item->price * $item->quantity, 2) }}
+                                        {{CURRENCY}}{{ number_format($item->price * $item->quantity, 2) }}
                                     </td>
                                 </tr>
                             @endforeach
@@ -190,23 +190,23 @@
 
                             <div class="d-flex justify-content-between mb-2">
                                 <span>{{ __('admin.Subtotal') }}</span>
-                                <span>MX${{ number_format($order->sub_total, 2) }}</span>
+                                <span>{{CURRENCY}}{{ number_format($order->sub_total, 2) }}</span>
                             </div>
 
                             <div class="d-flex justify-content-between mb-2">
                                 <span>{{ __('admin.Shipping') }}</span>
-                                <span>MX${{ number_format($order->shipping, 2) }}</span>
+                                <span>{{CURRENCY}}{{ number_format($order->shipping, 2) }}</span>
                             </div>
 
                             <div class="d-flex justify-content-between mb-2">
                                 <span>{{ __('admin.Tax') }}</span>
-                                <span>MX${{ number_format($order->tax, 2) }}</span>
+                                <span>{{CURRENCY}}{{ number_format($order->tax, 2) }}</span>
                             </div>
 
                             @if($order->discount > 0)
                                 <div class="d-flex justify-content-between mb-2 text-danger">
                                     <span>{{ __('admin.Discount') }}</span>
-                                    <span>-MX${{ number_format($order->discount, 2) }}</span>
+                                    <span>-{{CURRENCY}}{{ number_format($order->discount, 2) }}</span>
                                 </div>
                             @endif
 
@@ -214,7 +214,7 @@
 
                             <div class="d-flex justify-content-between fw-bold fs-5">
                                 <span>{{ __('admin.Total') }}</span>
-                                <span>MX${{ number_format($order->price, 2) }}</span>
+                                <span>{{CURRENCY}}{{ number_format($order->price, 2) }}</span>
                             </div>
 
                         </div>

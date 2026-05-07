@@ -240,7 +240,7 @@ class Product extends Model
      */
     public function getPriceRangeAttribute()
     {
-        if (!$this->has_variants) {
+        if (!$this->has_variants == 1) {
             return null;
         }
 
@@ -254,7 +254,7 @@ class Product extends Model
     // Accessor to get total quantity (for simple products or sum of variants)
     public function getTotalQuantityAttribute()
     {
-        if ($this->has_variants) {
+        if ($this->has_variants == 1) {
             return $this->variants()->sum('quantity');
         }
         return $this->quantity ?? 0;
@@ -263,7 +263,7 @@ class Product extends Model
     // Accessor to get min price
     public function getMinPriceAttribute()
     {
-        if ($this->has_variants) {
+        if ($this->has_variants == 1) {
             return $this->variants()->min('price');
         }
         return $this->price;
@@ -272,7 +272,7 @@ class Product extends Model
     // Accessor to get max price
     public function getMaxPriceAttribute()
     {
-        if ($this->has_variants) {
+        if ($this->has_variants == 1) {
             return $this->variants()->max('price');
         }
         return $this->price;
@@ -290,5 +290,51 @@ class Product extends Model
         $this->min_price = $minPrice;
         $this->max_price = $maxPrice;
         $this->save();
+    }
+    public function getPriceDisplayAttribute()
+    {
+        if ($this->has_variants == 1 && $this->variants && $this->variants->count() > 0) {
+            $variantPrices = $this->variants->pluck('price')->toArray();
+            $variantOfferPrices = $this->variants->pluck('offer_price')->filter()->toArray();
+
+            $pricesToShow = !empty($variantOfferPrices) ? $variantOfferPrices : $variantPrices;
+
+            if (empty($pricesToShow)) {
+                return (object) ['type' => 'single', 'price' => 0];
+            }
+
+            $minPrice = min($pricesToShow);
+            $maxPrice = max($pricesToShow);
+
+            if ($minPrice == $maxPrice) {
+                return (object) [
+                    'type' => 'single',
+                    'price' => $minPrice,
+                    'original_price' => $this->getOriginalPriceForVariants($variantPrices, $minPrice)
+                ];
+            } else {
+                return (object) [
+                    'type' => 'range',
+                    'min_price' => $minPrice,
+                    'max_price' => $maxPrice,
+                    'original_price' => $this->getOriginalPriceForVariants($variantPrices, $minPrice)
+                ];
+            }
+        } else {
+            $displayPrice = $this->offer_price ?? $this->price;
+            $originalPrice = ($this->offer_price && $this->offer_price < $this->price) ? $this->price : null;
+
+            return (object) [
+                'type' => 'single',
+                'price' => $displayPrice,
+                'original_price' => $originalPrice
+            ];
+        }
+    }
+
+    private function getOriginalPriceForVariants($variantPrices, $currentMinPrice)
+    {
+        $minOriginal = min($variantPrices);
+        return ($minOriginal != $currentMinPrice) ? $minOriginal : null;
     }
 }

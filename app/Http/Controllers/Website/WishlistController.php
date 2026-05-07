@@ -9,7 +9,7 @@ class WishlistController extends Controller
     private function owner(): array
     {
         if (auth('customer')->check()) {
-            return ['customers_id' => auth('customer')->id()];
+            return ['customer_id' => auth('customer')->id()];
         }
 
         return ['session_id' => session()->getId()];
@@ -63,18 +63,18 @@ class WishlistController extends Controller
         $customerId = auth('customer')->id();
 
         $guestItems = Wishlist::where('session_id', $sessionId)
-            ->whereNull('customers_id')
+            ->whereNull('customer_id')
             ->get();
 
         foreach ($guestItems as $item) {
 
-            $exists = Wishlist::where('customers_id', $customerId)
+            $exists = Wishlist::where('customer_id', $customerId)
                 ->where('product_id', $item->product_id)
                 ->exists();
 
             if (!$exists) {
                 $item->update([
-                    'customers_id' => $customerId,
+                    'customer_id' => $customerId,
                     'session_id' => null
                 ]);
             } else {

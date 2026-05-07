@@ -56,6 +56,10 @@ class ProductController extends Controller
     public function productDetail(string $slug)
     {
         $product = Product::with([
+            'variants.combinations.attributeValue.attribute',
+            'gallery',
+            'category',
+            'subcategory',
             'questions' => function ($q) {
                 $q->where('is_approved', 1)
                     ->with([

@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="_token" content="{{ csrf_token() }}" />
 
-    <title>Pesos MX</title>
+    <title>Vaak golvslip MX</title>
 
     <!-- App favicon -->
     <!-- <link rel="novapay-pos icon" href="{{ asset('assets/images/favicon.ico') }}"> -->

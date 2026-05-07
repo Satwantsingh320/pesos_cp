@@ -12,14 +12,14 @@
                     </span>
                 </a>
 
-                <a href="{{ route('dashboard.index') }}" class="logo logo-light mt-5">
+                <a href="{{ route('dashboard.index') }}" class="logo logo-light mt-1">
                     <span class="logo-sm">
                         <img src="{{asset('assets/images/logo.png')}}" alt="">
                     </span>
                     <span class="logo-lg">
                         <img src="{{asset('assets/images/logo.png')}}" alt="">
                     </span>
-                    <!-- <h4 class="text-white">PESOS.MX</h4> -->
+                    <!-- <h4 class="text-white">vaakgolvslip.se</h4> -->
 
                 </a>
             </div>
@@ -41,10 +41,10 @@
                 </button>
 
                 <div class="dropdown-menu dropdown-menu-end">
-                    <a href="{{ route('change.language', 'es') }}"
-                        class="dropdown-item {{ app()->getLocale() == 'es' ? 'active' : '' }}">
-                        <img src="{{ asset('assets/images/flags/es.png') }}" height="16" class="me-2">
-                        Spanish
+                    <a href="{{ route('change.language', 'sv') }}"
+                        class="dropdown-item {{ app()->getLocale() == 'sv' ? 'active' : '' }}">
+                        <img src="{{ asset('assets/images/flags/sv.png') }}" height="16" class="me-2">
+                        Swedish
                     </a>
 
                     <a href="{{ route('change.language', 'en') }}"
@@ -139,7 +139,7 @@
                                 </li>
                             @empty
                                 <li class="text-center text-muted py-3">
-                                    No new notifications
+                                    {{ __('website.No new notifications') }}
                                 </li>
                             @endforelse
 

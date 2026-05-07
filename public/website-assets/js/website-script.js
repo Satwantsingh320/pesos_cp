@@ -217,19 +217,45 @@ function updateCartQty(CartItemId, qty, updateUrl) {
             quantity: qty,
         },
         success: function (res) {
-            $("#item-total-" + CartItemId).text(res.data.item_total);
-            // update billing summary
-            $("#subtotal").text(res.data.subtotal);
-            $("#discount").text("- " + res.data.discount);
-            $("#tax").text(res.data.tax);
-            $("#shipping").text(res.data.shipping);
-            $("#grand_total").text(res.data.grand_total);
-            // Update cart badge
-            const cartBadge = document.getElementById("cart-count");
-            if (cartBadge) cartBadge.innerText = res.data.cart_count;
+console.log(res);
+             $("#item-total-" + CartItemId).text(res.item_total);
+    $("#subtotal").text(res.subtotal);
+    $("#discount").text("- " + res.discount);
+    $("#tax").text(res.tax);
+    $("#shipping").text(res.shipping);
+    $("#grand_total").text(res.grand_total);
+    const cartBadge = document.getElementById("cart-count");
+    if (cartBadge) cartBadge.innerText = res.cart_count;
         },
         error: function (xhr) {
-            console.log(xhr);
+             let res = xhr.responseJSON;
+          if (xhr.status === 422) {
+                //erors display
+            } else if (xhr.status === 400) {
+                //console.log('here');
+                $.toast({
+                    heading: "Error",
+                    position: "top-right", // This moves the toast to the top right
+                    text: res?.message ?? "Invalid request",
+                    showHideTransition: "fade",
+                    icon: "error",
+                    loaderBg: dangerColor,
+                    afterHidden: function () {
+                        if (res?.extra?.redirect) {
+                            window.location.href = res.extra.redirect;
+                        }
+                    },
+                });
+            } else {
+                $.toast({
+                    heading: "Error",
+                    position: "top-right", // This moves the toast to the top right
+                    text: res.message,
+                    showHideTransition: "fade",
+                    icon: "error",
+                    loaderBg: dangerColor,
+                });
+            }
         },
     });
 }

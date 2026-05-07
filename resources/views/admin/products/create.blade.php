@@ -1,62 +1,6 @@
 @extends('layouts.master')
 
 @section('css')
-    <style>
-        .select2-container .select2-selection--single .select2-selection__rendered {
-            color: var(--bs-emphasis-color);
-        }
-        .select2-container--default .select2-selection--multiple .select2-selection__choice {
-            background-color: #0d6efd;
-            color: white;
-            border: none;
-        }
-        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
-            color: white;
-            border-right: 1px solid rgba(255,255,255,0.3);
-        }
-        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
-            background-color: rgba(255,255,255,0.2);
-            color: white;
-        }
-        .variant-card {
-            background: #f8f9fa;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            padding: 15px;
-            border: 1px solid #e9ecef;
-        }
-        .variant-header {
-            cursor: move;
-            background: #e9ecef;
-            margin: -15px -15px 15px -15px;
-            padding: 10px 15px;
-            border-radius: 8px 8px 0 0;
-        }
-        .remove-variant {
-            float: right;
-            cursor: pointer;
-            color: #dc3545;
-        }
-        .combination-badge {
-            display: inline-block;
-            background: #6c757d;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            margin-right: 5px;
-            margin-bottom: 5px;
-        }
-        .attribute-group {
-            background: white;
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-        }
-        .select2-container {
-            width: 100% !important;
-        }
-    </style>
     <!-- Include Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
@@ -73,7 +17,7 @@
                             <a href="{{ route('products.index') }}" class="btn btn-dark btn-sm mx-2">
                                 <i class="bx bx-arrow-back"></i> {{ __('admin.back') }}
                             </a>
-                            <h4 class="mb-sm-0 font-size-18">{{ __('admin.products') }}</h4>
+                            <h4 class="mb-sm-0 font-size-18">{{ __('admin.add_product') }}</h4>
                         </div>
                     </div>
                 </div>
@@ -82,7 +26,7 @@
                     <div class="col-xl-12">
                         <div class="card">
                             <div class="card-body">
-                                <h4 class="card-title mb-4">{{ __('admin.add_product') }}</h4>
+                                <h4 class="card-title mb-4">{{ __('admin.product_information') }}</h4>
 
                                 <form method="POST" action="{{ route('products.store') }}" enctype="multipart/form-data" id="productForm">
                                     @csrf
@@ -134,10 +78,10 @@
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
-                                                <label class="form-label">Slug</label>
+                                                <label class="form-label">{{ __('admin.slug') }}</label>
                                                 <div class="d-flex gap-2">
                                                     <input type="text" id="product_slug" name="slug" class="form-control" required value="{{ old('slug') }}">
-                                                    <button type="button" id="regenSlug" class="btn btn-outline-secondary">@lang('admin.generate')</button>
+                                                    <button type="button" id="regenSlug" class="btn btn-outline-secondary">{{ __('admin.generate') }}</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -150,11 +94,11 @@
                                                 <div class="card-body">
                                                     <div class="form-check form-check-inline">
                                                         <input class="form-check-input" type="radio" name="product_type" id="simple_product" value="simple" checked>
-                                                        <label class="form-check-label" for="simple_product">Simple Product (No Variants)</label>
+                                                        <label class="form-check-label" for="simple_product">{{ __('admin.simple_product_no_variants') }}</label>
                                                     </div>
                                                     <div class="form-check form-check-inline">
                                                         <input class="form-check-input" type="radio" name="product_type" id="variant_product" value="variant">
-                                                        <label class="form-check-label" for="variant_product">Variable Product (With Variants)</label>
+                                                        <label class="form-check-label" for="variant_product">{{ __('admin.variable_product_with_variants') }}</label>
                                                     </div>
                                                     <input type="hidden" name="has_variants" id="has_variants" value="0">
                                                 </div>
@@ -189,7 +133,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-4 d-none">
                                                 <div class="mb-3">
                                                     <label class="form-label">{{ __('admin.offer_price') }}</label>
                                                     <div class="input-group">
@@ -212,10 +156,10 @@
                                         <!-- Attribute Selection -->
                                         <div class="row mb-4">
                                             <div class="col-md-12">
-                                                <h5>Product Attributes</h5>
+                                                <h5>{{ __('admin.product_attributes') }}</h5>
                                                 <div id="attribute_selection">
                                                     @foreach($attributes as $attribute)
-                                                        <div class="attribute-group">
+                                                        <div class="attribute-group mb-3">
                                                             <label class="form-label fw-bold">{{ $attribute->display_name }}</label>
                                                             <select class="form-control attribute-select select2-multiple"
                                                                     data-attribute-id="{{ $attribute->id }}"
@@ -231,7 +175,7 @@
                                                     @endforeach
                                                 </div>
                                                 <button type="button" class="btn btn-primary mt-2" id="generateVariantsBtn">
-                                                    <i class="bx bx-plus"></i> Generate Variants
+                                                    <i class="bx bx-plus"></i> {{ __('admin.generate_variants') }}
                                                 </button>
                                             </div>
                                         </div>
@@ -239,20 +183,20 @@
                                         <!-- Variants Table -->
                                         <div class="row mt-4">
                                             <div class="col-md-12">
-                                                <h5>Product Variants</h5>
+                                                <h5>{{ __('admin.product_variants') }}</h5>
                                                 <div class="table-responsive">
                                                     <table class="table table-bordered" id="variantsTable">
                                                         <thead>
                                                             <tr>
-                                                                <th>Combination</th>
-                                                                <th>SKU</th>
-                                                                <th>Barcode</th>
-                                                                <th>Price</th>
-                                                                <th>Offer Price</th>
-                                                                <th>Quantity</th>
-                                                                <th>Low Stock</th>
-                                                                <th>Status</th>
-                                                                <th></th>
+                                                                <th>{{ __('admin.combination') }}</th>
+                                                                <th>{{ __('admin.image') }}</th>
+                                                                <th>{{ __('admin.sku') }}</th>
+                                                                <th>{{ __('admin.barcode') }}</th>
+                                                                <th>{{ __('admin.price') }}</th>
+                                                                <th>{{ __('admin.quantity') }}</th>
+                                                                <th>{{ __('admin.low_stock') }}</th>
+                                                                <th>{{ __('admin.status') }}</th>
+                                                                <th>{{ __('admin.actions') }}</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody id="variantsTableBody">
@@ -268,18 +212,18 @@
                                     <div class="row mt-4">
                                         <div class="col-md-6">
                                             <div class="product-visibility">
-                                                <h6>@lang('admin.product_visibility') :</h6>
+                                                <h6>{{ __('admin.product_visibility') }}:</h6>
                                                 <div class="form-check mb-1">
                                                     <input class="form-check-input" id="is_special_offer" type="checkbox" name="is_special_offer" value="1" {{ old('is_special_offer') ? 'checked' : '' }}>
-                                                    <label for="is_special_offer" class="form-check-label">Special Offer</label>
+                                                    <label for="is_special_offer" class="form-check-label">{{ __('admin.special_offer') }}</label>
                                                 </div>
                                                 <div class="form-check mb-1">
                                                     <input class="form-check-input" type="checkbox" name="is_clearance" id="is_clearance" value="1" {{ old('is_clearance') ? 'checked' : '' }}>
-                                                    <label for="is_clearance" class="form-check-label">Clearance Item</label>
+                                                    <label for="is_clearance" class="form-check-label">{{ __('admin.clearance_item') }}</label>
                                                 </div>
                                                 <div class="form-check mb-1">
                                                     <input id="is_featured" class="form-check-input" type="checkbox" name="is_featured" value="1" {{ old('is_featured') ? 'checked' : '' }}>
-                                                    <label for="is_featured" class="form-check-label">Featured Product</label>
+                                                    <label for="is_featured" class="form-check-label">{{ __('admin.featured_product') }}</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -342,9 +286,9 @@
                                             <div class="mb-3">
                                                 <label class="form-label">{{ __('admin.type') }}</label>
                                                 <select name="type" class="form-select">
-                                                    <option value="Nuevo" {{ old('type') == 'Nuevo' ? 'selected' : '' }}>{{ __('admin.New') }}</option>
-                                                    <option value="Reacondicionado" {{ old('type') == 'Reacondicionado' ? 'selected' : '' }}>{{ __('admin.Refurbished') }}</option>
-                                                    <option value="Usado" {{ old('type') == 'Usado' ? 'selected' : '' }}>{{ __('admin.Used') }}</option>
+                                                    <option value="Nuevo" {{ old('type') == 'Nuevo' ? 'selected' : '' }}>{{ __('admin.new') }}</option>
+                                                    <option value="Reacondicionado" {{ old('type') == 'Reacondicionado' ? 'selected' : '' }}>{{ __('admin.refurbished') }}</option>
+                                                    <option value="Usado" {{ old('type') == 'Usado' ? 'selected' : '' }}>{{ __('admin.used') }}</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -376,9 +320,7 @@
 
 @section('js')
     <script src="https://cdn.ckeditor.com/ckeditor5/40.2.0/classic/ckeditor.js"></script>
-    <!-- Include jQuery (if not already included) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Include Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
@@ -387,7 +329,7 @@
             $('.single-select').select2({
                 theme: 'bootstrap-5',
                 width: '100%',
-                placeholder: 'Select an option',
+                placeholder: '{{ __("admin.select_an_option") }}',
                 allowClear: true
             });
 
@@ -395,7 +337,7 @@
             $('.select2-multiple').select2({
                 theme: 'bootstrap-5',
                 width: '100%',
-                placeholder: 'Select options',
+                placeholder: '{{ __("admin.select_options") }}',
                 allowClear: true,
                 closeOnSelect: false
             });
@@ -460,7 +402,7 @@
             });
 
             if (!hasAttributes) {
-                toastr.warning('Please select at least one attribute value');
+                toastr.warning('{{ __("admin.please_select_at_least_one_attribute") }}');
                 return;
             }
 
@@ -477,28 +419,33 @@
                 attributeIds.forEach(attrId => {
                     let valueId = combination[attrId];
                     let valueText = $(`.attribute-select[data-attribute-id="${attrId}"] option[value="${valueId}"]`).text();
-                    combinationHtml += `<span class="combination-badge">${valueText}</span>`;
-                    html += `<input type="hidden" name="variants[${index}][attributes][${attrId}]" value="${valueId}">`;
+                    combinationHtml += `<span class="badge bg-secondary me-1">${valueText}</span>`;
                 });
 
                 html += `
                     <tr data-combination='${JSON.stringify(combination)}'>
                         <td>${combinationHtml}</td>
                         <td>
+                            <input type="file" name="variants[${index}][image]" class="form-control variant-image-input" accept="image/*" onchange="previewVariantImage(this, ${index})">
+                            <div class="mt-2">
+                                <img id="variantImagePreview_${index}" class="img-thumbnail d-none" width="50">
+                            </div>
+                            <input type="hidden" name="variants[${index}][existing_image]" value="">
+                        </td>
+                        <td>
                             <input type="text" name="variants[${index}][sku]" class="form-control variant-sku"
                                    value="${generateSku(combination, index)}" required>
                         </td>
                         <td><input type="text" name="variants[${index}][barcode]" class="form-control"></td>
                         <td><input type="text" name="variants[${index}][price]" class="form-control variant-price __numeric_decimal" required></td>
-                        <td><input type="text" name="variants[${index}][offer_price]" class="form-control variant-offer-price __numeric_decimal"></td>
                         <td><input type="number" name="variants[${index}][quantity]" class="form-control variant-qty" value="0" required></td>
                         <td><input type="number" name="variants[${index}][low_stock_threshold]" class="form-control" value="5"></td>
                         <td>
                             <select name="variants[${index}][status]" class="form-select">
-                                <option value="1">Active</option>
-                                <option value="0">Inactive</option>
+                                <option value="1">{{ __("admin.active") }}</option>
+                                <option value="0">{{ __("admin.inactive") }}</option>
                             </select>
-                         </td>
+                        </td>
                         <td><button type="button" class="btn btn-sm btn-danger remove-variant"><i class="bx bx-trash"></i></button></td>
                     </tr>
                 `;
@@ -526,6 +473,15 @@
             return combinations;
         }
 
+        function previewVariantImage(input, index) {
+            const preview = document.getElementById(`variantImagePreview_${index}`);
+            const file = input.files[0];
+            if (file) {
+                preview.src = URL.createObjectURL(file);
+                preview.classList.remove('d-none');
+            }
+        }
+
         function bindVariantEvents() {
             // Remove variant
             $('.remove-variant').on('click', function() {
@@ -535,19 +491,8 @@
             // Price validation
             $('.variant-price').on('change', function() {
                 let price = parseFloat($(this).val()) || 0;
-                let offerPrice = $(this).closest('tr').find('.variant-offer-price').val();
-                if (offerPrice && parseFloat(offerPrice) >= price) {
-                    toastr.warning('Offer price must be less than regular price');
-                    $(this).closest('tr').find('.variant-offer-price').val('');
-                }
-            });
-
-            $('.variant-offer-price').on('change', function() {
-                let offerPrice = parseFloat($(this).val()) || 0;
-                let price = parseFloat($(this).closest('tr').find('.variant-price').val()) || 0;
-                if (offerPrice >= price) {
-                    toastr.warning('Offer price must be less than regular price');
-                    $(this).val('');
+                if (price <= 0) {
+                    toastr.warning('{{ __("admin.please_enter_valid_price") }}');
                 }
             });
         }
@@ -558,7 +503,7 @@
             if ($('.__category').length > 0 && value != '') {
                 let route = $(this).attr('data-route');
                 let title = $(this).attr('data-title') || '-Select-';
-                let data = { category_id: value, title: title,   _token: '{{ csrf_token() }}' };
+                let data = { category_id: value, title: title, _token: '{{ csrf_token() }}' };
 
                 $.ajax({
                     url: route,
@@ -570,11 +515,10 @@
                     success: function(response) {
                         if (response.success) {
                             $('.__subcategory').html(response.options);
-                            // Reinitialize select2 for subcategory
                             $('.__subcategory').select2({
                                 theme: 'bootstrap-5',
                                 width: '100%',
-                                placeholder: 'Select an option',
+                                placeholder: '{{ __("admin.select_an_option") }}',
                                 allowClear: true
                             });
                         }
@@ -625,7 +569,7 @@
                 let hasVariants = $('#variantsTableBody tr').length > 0;
                 if (!hasVariants) {
                     e.preventDefault();
-                    toastr.error('Please generate at least one variant for this product');
+                    toastr.error('{{ __("admin.please_generate_at_least_one_variant") }}');
                     return false;
                 }
 
@@ -634,7 +578,7 @@
                 $('.variant-price').each(function() {
                     if (!$(this).val() || parseFloat($(this).val()) <= 0) {
                         valid = false;
-                        toastr.error('Please enter valid price for all variants');
+                        toastr.error('{{ __("admin.please_enter_valid_price_for_all_variants") }}');
                         return false;
                     }
                 });
