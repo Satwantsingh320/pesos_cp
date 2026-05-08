@@ -75,6 +75,7 @@ class ProductController extends Controller
             'is_clearance' => 'sometimes|boolean',
             'is_featured' => 'sometimes|boolean',
             'has_variants' => 'sometimes|boolean',
+            'low_stock_threshold' => 'nullable',
         ];
 
         // Variant validation if product has variants
@@ -87,7 +88,7 @@ class ProductController extends Controller
         } else {
             // Simple product validation
             $rules['price'] = 'required|numeric|min:1';
-            $rules['offer_price'] = 'nullable|numeric|lt:price';
+            //$rules['offer_price'] = 'nullable|numeric|lt:price';
             $rules['sku_number'] = 'required|unique:products,sku_number';
             $rules['barcode_number'] = 'required';
             $rules['pieces_available'] = 'required|numeric|min:0';
@@ -125,6 +126,7 @@ class ProductController extends Controller
                 'cover_image' => $coverImg,
                 'is_special_offer' => $request->has('is_special_offer'),
                 'is_clearance' => $request->has('is_clearance'),
+                'low_stock_threshold' => $request->has('low_stock_threshold'),
                 'is_featured' => $request->has('is_featured'),
                 'slug' => $inputs['slug'],
                 'type' => $inputs['type'],
@@ -247,7 +249,7 @@ class ProductController extends Controller
         // Calculate total stock for product (including variants if applicable)
         $totalStock = $product->has_variants
             ? $product->variants->sum('quantity')
-            : $product->no_of_pieces_available;
+            : $product->quantity;
 
         // Get low stock variants (for variant products)
         $lowStockVariants = collect();
@@ -303,6 +305,7 @@ class ProductController extends Controller
             'is_clearance' => 'sometimes|boolean',
             'is_featured' => 'sometimes|boolean',
             'has_variants' => 'sometimes',
+            'low_stock_threshold' => 'nullable',
         ];
 
         // Variant validation
@@ -314,7 +317,7 @@ class ProductController extends Controller
             $rules['variants.*.image'] = 'nullable|mimes:jpg,jpeg,png,svg';
         } else {
             $rules['price'] = 'required|numeric|min:1';
-            $rules['offer_price'] = 'nullable|numeric|lt:price';
+            //$rules['offer_price'] = 'nullable|numeric|lt:price';
             $rules['sku_number'] = 'required|unique:products,sku_number,' . $product->id;
             $rules['barcode_number'] = 'required';
             $rules['pieces_available'] = 'required|numeric|min:0';
@@ -334,6 +337,7 @@ class ProductController extends Controller
             $product->description = $request->description;
             $product->estimated_delivery_time = $request->estimated_delivery_time;
             $product->status = $request->status;
+            $product->low_stock_threshold = $request->low_stock_threshold;
             $product->is_special_offer = $request->has('is_special_offer');
             $product->is_clearance = $request->has('is_clearance');
             $product->is_featured = $request->has('is_featured');

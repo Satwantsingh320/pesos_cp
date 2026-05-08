@@ -624,4 +624,7 @@ return [
     'Failed to assign VIP: ' => 'Neuspešno dodeljivanje VIP statusa: ',
     'VIP removed successfully from ' => 'VIP status je uspešno uklonjen sa ',
     'vip_assigned_successfully' => 'VIP status je uspešno dodeljen :name. Molimo postavite ručne cene za proizvode.',
+    'generate_variants_note' => 'Välj produktattribut och generera automatiskt alla möjliga variantkombinationer.',
+    'variants_generated_successfully' => 'Varianter genererades framgångsrikt',
+    'low_stock_threshold' => 'Låg lagernivå gräns',
 ];

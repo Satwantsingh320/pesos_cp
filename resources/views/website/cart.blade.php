@@ -114,8 +114,7 @@
                                                                     class="fa-solid fa-minus"></i></span></a>
                                                         <input name="quantity" type="text" class="quantity__input"
                                                             value="{{ $item->quantity }}" min="1"
-                                                            max="{{ $item->product->no_of_pieces_available ?? $item->Quantity }}"
-                                                            readonly>
+                                                            max="{{ $item->product->quantity ?? $item->Quantity }}" readonly>
                                                         <a href="#" class="quantity__plus"><span><i
                                                                     class="fa-solid fa-plus"></i></span></a>
                                                     </div>

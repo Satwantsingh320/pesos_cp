@@ -104,7 +104,7 @@ class CartService
                 }
             } else {
                 // Handle simple product
-                $currentStock = $product->no_of_pieces_available ?? 0;
+                $currentStock = $product->quantity ?? 0;
 
                 if ($currentStock <= 0) {
                     throw new \Exception('Product out of stock', 400);
@@ -207,8 +207,8 @@ class CartService
                     throw new \Exception("Only {$availableStock} items available for this variant", 400);
                 }
             } else {
-                if ($product->no_of_pieces_available < $quantity) {
-                    throw new \Exception("Only {$product->no_of_pieces_available} items available", 400);
+                if ($product->quantity < $quantity) {
+                    throw new \Exception("Only {$product->quantity} items available", 400);
                 }
             }
 
@@ -257,6 +257,15 @@ class CartService
      */
     public function validateCart()
     {
+
+        function getVipPrice($product, $variant, $customer)
+        {
+            if (!$customer || !$customer->is_vip) {
+                return null;
+            }
+            return app(VipPricingService::class)->getVipPrice($customer, $product, $variant);
+        }
+
         $cart = $this->getCart();
         $messages = [];
 
@@ -286,9 +295,11 @@ class CartService
                     $messages[] = "{$product->name} variant removed (not available)";
                     continue;
                 }
-
+                $customer = auth('customer')->user();
+                $regularPrice = $variant->offer_price ?? $variant->price;
+                $vipPrice = getVipPrice($product, $variant, $customer);
+                $actualPrice = $vipPrice ?? $regularPrice;
                 $currentStock = $variant->quantity;
-                $actualPrice = $variant->offer_price ?? $variant->price;
 
                 // Check if variant is out of stock
                 if ($currentStock <= 0) {
@@ -307,8 +318,12 @@ class CartService
                 $item->variant_attributes = implode(', ', $attributeText);
             } else {
                 // Handle simple product
-                $currentStock = $product->no_of_pieces_available ?? 0;
-                $actualPrice = $product->offer_price ?? $product->price;
+                $customer = auth('customer')->user();
+                $regularPrice = $product->offer_price ?? $product->price;
+                $vipPrice = getVipPrice($product, null, $customer);
+                $actualPrice = $vipPrice ?? $regularPrice;
+                $currentStock = $product->quantity ?? 0;
+                //add here
 
                 if ($currentStock <= 0) {
                     $item->delete();
@@ -378,11 +393,13 @@ class CartService
 
         // Calculate tax
         $taxPercent = WebsiteHelper::getTax();
-        $taxAmount = round($subtotal * ($taxPercent / 100), 2);
+        $taxAmount = $subtotal - $subtotal * (100 / (100 + $taxPercent));
+        $subtotal = $subtotal - $taxAmount;
+        $cart->subtotal = $subtotal;
 
         // Calculate free shipping threshold
         $freeShippingThreshold = WebsiteHelper::getShippingFree();
-        $finalShippingFee = ($subtotal >= $freeShippingThreshold) ? 0 : $shippingFee;
+        $finalShippingFee = ($subtotal + $taxAmount) > $freeShippingThreshold ? 0 : $shippingFee;
 
         // Update cart
         $cart->subtotal = $subtotal;

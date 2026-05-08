@@ -8,6 +8,58 @@
 
 @section('content')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.0/dist/fancybox/fancybox.css" />
+    <style>
+        .vip-price {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .vip-badge {
+            background-color: #28a745;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .price-tag {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
 
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
@@ -24,6 +76,12 @@
                     : ['session_id' => session()->getId()];
 
                 $isWishlisted = Wishlist::where('product_id', $product->id)->where($owner)->exists();
+
+                // Set VIP customer for product
+                $customer = auth('customer')->user();
+                if ($customer) {
+                    $product->vip_customer = $customer;
+                }
 
                 // Calculate price display for variant products
                 $hasVariants = $product->has_variants == 1 && $product->variants && $product->variants->count() > 0;
@@ -69,7 +127,7 @@
 
                 $currentStock = $hasVariants
                     ? ($selectedVariant ? $selectedVariant->quantity : $variants->sum('quantity'))
-                    : ($product->no_of_pieces_available ?? 0);
+                    : ($product->quantity ?? 0);
 
                 // Get selected attributes for display
                 $selectedAttributes = [];
@@ -79,6 +137,17 @@
                             $selectedAttributes[$combo->attributeValue->attribute->name] = $combo->attributeValue->value;
                         }
                     }
+                }
+
+                // Helper function to get VIP price
+                function getVipPrice($product, $variant, $customer)
+                {
+                    if (!$customer || !$customer->is_vip) {
+                        return null;
+                    }
+
+                    $vipService = app(App\Services\VipPricingService::class);
+                    return $vipService->getVipPrice($customer, $product, $variant);
                 }
             @endphp
 
@@ -124,30 +193,70 @@
 
                         <div class="product-price mb-3">
                             @if($hasVariants && $selectedVariant)
-                                <div class="d-flex align-items-center gap-3">
-                                    <span class="price-tag">
-                                        {{CURRENCY}}
-                                        {{ number_format($selectedVariant->offer_price ?? $selectedVariant->price, 2) }}
-                                    </span>
-                                    @if($selectedVariant->offer_price && $selectedVariant->offer_price < $selectedVariant->price)
-                                        <span class="text-muted">
-                                            <del>{{CURRENCY}} {{ number_format($selectedVariant->price, 2) }}</del>
-                                        </span>
-                                        <span class="badge bg-danger">
-                                            -{{ round((($selectedVariant->price - $selectedVariant->offer_price) / $selectedVariant->price) * 100) }}%
-                                        </span>
-                                    @endif
+                                @php
+                                    $regularPrice = $selectedVariant->offer_price ?? $selectedVariant->price;
+                                    $vipPrice = getVipPrice($product, $selectedVariant, $customer);
+                                    $displayPrice = $vipPrice ?? $regularPrice;
+                                    $originalPrice = ($selectedVariant->offer_price && $selectedVariant->offer_price < $selectedVariant->price)
+                                        ? $selectedVariant->price
+                                        : null;
+                                @endphp
+                                <div class="d-flex align-items-center gap-3 flex-wrap">
+                                    <div>
+                                        @if($vipPrice)
+                                            <span class="price-tag vip-price">{{CURRENCY}}
+                                                {{ number_format($displayPrice, 2) }}</span>
+                                            <small class="vip-badge ms-2">{{ __('VIP Price') }}</small>
+                                            @if($regularPrice > $displayPrice)
+                                                <div class="text-muted small">
+                                                    <del>{{ __('Regular') }}: {{CURRENCY}} {{ number_format($regularPrice, 2) }}</del>
+                                                </div>
+                                            @endif
+                                        @else
+                                            <span class="price-tag">{{CURRENCY}} {{ number_format($displayPrice, 2) }}</span>
+                                            @if($originalPrice)
+                                                <span class="text-muted ms-2">
+                                                    <del>{{CURRENCY}} {{ number_format($originalPrice, 2) }}</del>
+                                                </span>
+                                                <span class="badge bg-danger ms-2">
+                                                    -{{ round((($originalPrice - $displayPrice) / $originalPrice) * 100) }}%
+                                                </span>
+                                            @endif
+                                        @endif
+                                    </div>
                                 </div>
                             @else
-                                <div class="d-flex align-items-center gap-3">
-                                    <span class="price-tag">
-                                        {{CURRENCY}} {{ number_format($product->offer_price ?? $product->price, 2) }}
-                                    </span>
-                                    @if($product->offer_price && $product->offer_price < $product->price)
-                                        <span class="text-muted">
-                                            <del>{{CURRENCY}} {{ number_format($product->price, 2) }}</del>
-                                        </span>
-                                    @endif
+                                @php
+                                    $regularPrice = $product->offer_price ?? $product->price;
+                                    $vipPrice = getVipPrice($product, null, $customer);
+                                    $displayPrice = $vipPrice ?? $regularPrice;
+                                    $originalPrice = ($product->offer_price && $product->offer_price < $product->price)
+                                        ? $product->price
+                                        : null;
+                                @endphp
+                                <div class="d-flex align-items-center gap-3 flex-wrap">
+                                    <div>
+                                        @if($vipPrice)
+                                            <span class="price-tag vip-price">{{CURRENCY}}
+                                                {{ number_format($displayPrice, 2) }} </span>
+                                            <small class="vip-badge ms-2">{{ __('VIP Price') }}</small>
+                                            @if($regularPrice > $displayPrice)
+                                                <div class="text-muted small">
+                                                    <del>{{ __('Regular') }}: {{CURRENCY}} {{ number_format($regularPrice, 2) }}</del>
+                                                </div>
+                                            @endif
+                                        @else
+                                            <span class="price-tag">{{CURRENCY}} {{ number_format($displayPrice, 2) }}</span>
+                                            @if($originalPrice)
+                                                <span class="text-muted ms-2">
+                                                    <del>{{CURRENCY}} {{ number_format($originalPrice, 2) }}</del>
+                                                </span>
+                                                <span class="badge bg-danger ms-2">
+                                                    -{{ round((($originalPrice - $displayPrice) / $originalPrice) * 100) }}%
+                                                </span>
+                                            @endif
+                                        @endif
+                                    </div>
                                 </div>
                             @endif
                             <small class="text-danger d-block">{{ __('website.prices_include_tax') }}</small>
@@ -222,15 +331,34 @@
 
                                 {{-- Selected Variant Info Card --}}
                                 @if($selectedVariant)
+                                    @php
+                                        $variantRegularPrice = $selectedVariant->offer_price ?? $selectedVariant->price;
+                                        $variantVipPrice = getVipPrice($product, $selectedVariant, $customer);
+                                    @endphp
                                     <div class="selected-variant-card">
                                         <div class="row">
-                                            <div class="col-6">
+                                            <div class="col-4">
                                                 <div class="label">{{ __('website.sku') }}</div>
                                                 <div class="value">{{ $selectedVariant->sku }}</div>
                                             </div>
-                                            <div class="col-6">
+                                            <div class="col-4">
                                                 <div class="label">{{ __('website.available_stock') }}</div>
                                                 <div class="value">{{ $selectedVariant->quantity }} {{ __('website.units') }}</div>
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="label">{{ __('website.price') }}</div>
+                                                <div class="value">
+                                                    @if($variantVipPrice)
+                                                        <span class="text-success">{{CURRENCY}}
+                                                            {{ number_format($variantVipPrice, 2) }}</span>
+                                                        <small class="vip-badge">VIP</small>
+                                                        <div class="small text-secondary">
+                                                            <del>{{CURRENCY}} {{ number_format($variantRegularPrice, 2) }}</del>
+                                                        </div>
+                                                    @else
+                                                        {{CURRENCY}} {{ number_format($variantRegularPrice, 2) }}
+                                                    @endif
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="row mt-2">
@@ -427,7 +555,8 @@
         </div>
     </section>
 
-       <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.0/dist/fancybox/fancybox.umd.js"></script>
     <script>
         Fancybox.bind("[data-fancybox='gallery']", {
@@ -435,7 +564,7 @@
             Toolbar: true
         });
 
-         document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function () {
             const barcodeValue = "{{ $product->barcode_number }}";
 
             if (barcodeValue) {
@@ -446,6 +575,9 @@
                     displayValue: true
                 });
             }
+
+            // Initialize variant selection
+            initVariantSelection();
         });
 
         function changeImage(element) {
@@ -465,6 +597,96 @@
             }
         }
 
+        // Variant selection function
+        function selectVariant(variantId) {
+            if (!variantId) return;
 
+            // Show loading overlay
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'flex';
+            }
+
+            // Update hidden inputs
+            const selectedVariantId = document.getElementById('selectedVariantId');
+            const variantIdInput = document.getElementById('variant_id');
+
+            if (selectedVariantId) selectedVariantId.value = variantId;
+            if (variantIdInput) variantIdInput.value = variantId;
+
+            // Submit the form
+            const variantForm = document.getElementById('variantForm');
+            if (variantForm) {
+                variantForm.submit();
+            } else {
+                // Fallback: reload page with variant parameter
+                let url = new URL(window.location.href);
+                url.searchParams.set('variant', variantId);
+                window.location.href = url.toString();
+            }
+        }
+
+        // Initialize variant selection listeners
+        function initVariantSelection() {
+            // For color swatches
+            const swatches = document.querySelectorAll('.variant-swatch');
+            swatches.forEach(swatch => {
+                swatch.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    if (this.classList.contains('disabled')) return;
+                    const variantId = this.getAttribute('data-variant-id');
+                    if (variantId) selectVariant(variantId);
+                });
+            });
+
+            // For text variant buttons
+            const buttons = document.querySelectorAll('.variant-option-btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    if (this.classList.contains('disabled')) return;
+                    const variantId = this.getAttribute('data-variant-id');
+                    if (variantId) selectVariant(variantId);
+                });
+            });
+        }
+
+        // Optional: Update price dynamically when variant changes (AJAX version)
+        async function updateVariantPrice(variantId) {
+            try {
+                const response = await fetch(`/get-variant-price/${variantId}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update price display
+                    const priceElement = document.querySelector('.price-tag');
+                    if (priceElement) {
+                        priceElement.innerHTML = '{{CURRENCY}} ' + data.price;
+                    }
+
+                    // Update stock display
+                    const stockElement = document.querySelector('.stock-badge');
+                    if (stockElement && data.stock !== undefined) {
+                        if (data.stock > 0) {
+                            stockElement.className = 'stock-badge in-stock';
+                            stockElement.innerHTML = '<i class="fas fa-check-circle"></i> {{ __("website.in_stock") }}';
+                            if (data.stock <= 10) {
+                                // Add low stock warning
+                            }
+                        } else {
+                            stockElement.className = 'stock-badge out-stock';
+                            stockElement.innerHTML = '<i class="fas fa-times-circle"></i> {{ __("website.out_of_stock") }}';
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating variant price:', error);
+            }
+        }
     </script>
 @endsection

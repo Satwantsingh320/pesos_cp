@@ -148,6 +148,15 @@
                                                     <input type="text" name="pieces_available" placeholder="{{ __('admin.no_of_pieces_available') }}" class="form-control __numeric" value="{{ old('pieces_available') }}">
                                                 </div>
                                             </div>
+                                              <div class="col-md-4">
+                                                <div class="mb-3">
+                                                    <label
+                                                        class="form-label">{{ __('admin.low_stock') }}</label>
+                                                    <input type="text" name="low_stock_threshold"
+                                                        placeholder="{{ __('admin.low_stock_threshold') }}"
+                                                        class="form-control __numeric">
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 

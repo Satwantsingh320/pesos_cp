@@ -18,7 +18,7 @@
 
                         @else
                             <button type="button" class="btn btn-success manage-inventory-btn" data-item-type="simple"
-                                data-product-id="{{ $product->id }}" data-stock="{{ $product->no_of_pieces_available ?? 0 }}"
+                                data-product-id="{{ $product->id }}" data-stock="{{ $product->quantity ?? 0 }}"
                                 data-sku="{{ $product->sku_number }}" data-product-name="{{ $product->name }}"
                                 data-bs-toggle="modal" data-bs-target="#manageInventoryModal">
                                 <i class="bx bx-package"></i> {{__('admin.manage_inventory')}}
@@ -114,9 +114,8 @@
 
                                             @if($product->has_variants == 0)
                                                 <h6 class="text-success text-uppercase">
-                                                    {{__('admin.no_of_pieces_available')}}:
-                                                    <span
-                                                        id="product-stock-{{$product->id}}">{{$product->no_of_pieces_available ?? 0}}</span>
+                                                    {{__('admin.quantity')}}:
+                                                    <span id="product-stock-{{$product->id}}">{{$product->quantity ?? 0}}</span>
                                                 </h6>
                                                 <h5 class="mb-4">{{__('admin.price')}} :
                                                     <span

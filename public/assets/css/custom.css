@@ -3,12 +3,17 @@
 } */
 
 span.logo-lg img {
-    width: 150px;
+    width: 87px;
 }
 
 span.logo-sm img {
     width: 35px;
 }
+
+.navbar-brand-box{
+background: #ffffff !important;
+}
+
 
 .company-search,
 .search-box .search-icon {

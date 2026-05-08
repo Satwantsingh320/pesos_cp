@@ -226,7 +226,7 @@ $states = [
 
         {{-- Promo and Order Summary --}}
         <div class="col-lg-4 col-sm-4">
-          <div class="promo-code-box mb-2">
+          <div class="promo-code-box mb-2 d-none">
             <h5>{{ __('website.promo_code') }}</h5>
             <form class="ajax-form" data-url="{{ route('website.cart.applyCoupon') }}" data-type="billingUpdate"
               data-method="post">
@@ -273,7 +273,7 @@ $states = [
 
                     $maxStock = $item->variant
                         ? $item->variant->quantity
-                        : ($item->product->no_of_pieces_available ?? $item->quantity);
+                        : ($item->product->quantity ?? $item->quantity);
                   @endphp
                   <tr id="cart-row-{{ $item->id }}">
                     <td class="w-20">

@@ -672,5 +672,7 @@ return [
     'cart_title' => 'Kundvagn',
     'image' => 'Bild',
     'No new notifications' => 'Inga nya aviseringar',
+    'cart_items_changed' => 'Vissa varor i kundvagnen har ändrats på grund av lager- eller prisuppdateringar.',
+
 
 ];

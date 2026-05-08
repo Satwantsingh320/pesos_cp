@@ -175,7 +175,7 @@ class CartController extends Controller
             }
         } else {
             // Simple product stock validation
-            $maxStock = $product->no_of_pieces_available ?? 0;
+            $maxStock = $product->quantity ?? 0;
 
             if ($request->quantity > $maxStock) {
                 return response()->json([
@@ -428,7 +428,7 @@ class CartController extends Controller
                 $billingFinal = $billingMeta;
             }
             // Save to Orders table as a single JSON blob
-            $order = Ordercreate([
+            $order = Order::create([
                 'customer_id' => auth('customer')->id(),
                 'stripe_id' => $session->id,
                 'payment_intent_id' => $session->payment_intent,

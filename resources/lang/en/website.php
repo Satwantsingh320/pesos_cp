@@ -588,4 +588,6 @@ return [
     'cart_title' => 'Shopping Cart',
     'image' => 'Image',
     'No new notifications' => 'No new notifications',
+    'cart_items_changed' => 'Some cart items have changed due to stock or price updates.',
+
 ];

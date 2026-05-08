@@ -2,7 +2,8 @@
 
 @section('css')
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
+        rel="stylesheet" />
     <style>
         .variant-image-preview {
             width: 60px;
@@ -11,10 +12,12 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
         .variant-image-container {
             position: relative;
             display: inline-block;
         }
+
         .remove-variant-image {
             position: absolute;
             top: -8px;
@@ -29,6 +32,7 @@
             cursor: pointer;
             line-height: 18px;
         }
+
         .combination-badge {
             display: inline-block;
             background: #6c757d;
@@ -38,9 +42,11 @@
             font-size: 12px;
             margin: 2px;
         }
+
         .gallery-item {
             position: relative;
         }
+
         .remove-gallery-image {
             position: absolute;
             top: -8px;
@@ -56,6 +62,7 @@
             font-size: 14px;
             line-height: 20px;
         }
+
         .preview-image {
             cursor: pointer;
         }
@@ -83,7 +90,8 @@
                             <div class="card-body">
                                 <h4 class="card-title mb-4">{{ __('admin.update_product_details') }}</h4>
 
-                                <form method="POST" action="{{ route('products.update', $product->id) }}" enctype="multipart/form-data" id="productForm">
+                                <form method="POST" action="{{ route('products.update', $product->id) }}"
+                                    enctype="multipart/form-data" id="productForm">
                                     @method('put')
                                     @csrf
 
@@ -92,7 +100,9 @@
                                         <div class="col-md-4">
                                             <div class="mb-3">
                                                 <label class="form-label">{{ __('admin.select_category') }}</label>
-                                                <select name="category" class="form-control select2 single-select __category" data-route="{{ route('subcategory.service') }}" required>
+                                                <select name="category"
+                                                    class="form-control select2 single-select __category"
+                                                    data-route="{{ route('subcategory.service') }}" required>
                                                     @foreach ($categories as $key => $value)
                                                         <option value="{{ $key }}" {{ $product->category_id == $key ? 'selected' : '' }}>
                                                             {{ $value }}
@@ -104,7 +114,9 @@
                                         <div class="col-md-4">
                                             <div class="mb-3">
                                                 <label class="form-label">{{ __('admin.select_subcategory') }}</label>
-                                                <select name="subcategory" class="form-control select2 single-select __subcategory" data-selected="{{ $product->subcategory_id }}" required>
+                                                <select name="subcategory"
+                                                    class="form-control select2 single-select __subcategory"
+                                                    data-selected="{{ $product->subcategory_id }}" required>
                                                 </select>
                                             </div>
                                         </div>
@@ -127,15 +139,19 @@
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label class="form-label">{{ __('admin.name') }}</label>
-                                                <input type="text" id="product_name" name="name" placeholder="{{ __('admin.enter_item_name') }}" class="form-control" required value="{{ $product->name }}">
+                                                <input type="text" id="product_name" name="name"
+                                                    placeholder="{{ __('admin.enter_item_name') }}" class="form-control"
+                                                    required value="{{ $product->name }}">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label class="form-label">{{ __('admin.slug') }}</label>
                                                 <div class="d-flex gap-2">
-                                                    <input type="text" id="product_slug" name="slug" class="form-control" required value="{{ $product->slug }}">
-                                                    <button type="button" id="regenSlug" class="btn btn-outline-secondary">{{ __('admin.generate') }}</button>
+                                                    <input type="text" id="product_slug" name="slug" class="form-control"
+                                                        required value="{{ $product->slug }}">
+                                                    <button type="button" id="regenSlug"
+                                                        class="btn btn-outline-secondary">{{ __('admin.generate') }}</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -147,32 +163,42 @@
                                             <div class="card border">
                                                 <div class="card-body">
                                                     <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="radio" name="product_type" id="simple_product" value="simple" {{ !$product->has_variants ? 'checked' : '' }}>
-                                                        <label class="form-check-label" for="simple_product">{{ __('admin.simple_product_no_variants') }}</label>
+                                                        <input class="form-check-input" type="radio" name="product_type"
+                                                            id="simple_product" value="simple" {{ !$product->has_variants ? 'checked' : '' }}>
+                                                        <label class="form-check-label"
+                                                            for="simple_product">{{ __('admin.simple_product_no_variants') }}</label>
                                                     </div>
                                                     <div class="form-check form-check-inline">
-                                                        <input class="form-check-input" type="radio" name="product_type" id="variant_product" value="variant" {{ $product->has_variants ? 'checked' : '' }}>
-                                                        <label class="form-check-label" for="variant_product">{{ __('admin.variable_product_with_variants') }}</label>
+                                                        <input class="form-check-input" type="radio" name="product_type"
+                                                            id="variant_product" value="variant" {{ $product->has_variants ? 'checked' : '' }}>
+                                                        <label class="form-check-label"
+                                                            for="variant_product">{{ __('admin.variable_product_with_variants') }}</label>
                                                     </div>
-                                                    <input type="hidden" name="has_variants" id="has_variants" value="{{ $product->has_variants ? 1 : 0 }}">
+                                                    <input type="hidden" name="has_variants" id="has_variants"
+                                                        value="{{ $product->has_variants ? 1 : 0 }}">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
                                     <!-- Simple Product Fields -->
-                                    <div id="simple_product_fields" style="{{ $product->has_variants ? 'display: none;' : '' }}">
+                                    <div id="simple_product_fields"
+                                        style="{{ $product->has_variants ? 'display: none;' : '' }}">
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="mb-3">
                                                     <label class="form-label">{{ __('admin.sku_number') }}</label>
-                                                    <input type="text" name="sku_number" placeholder="{{ __('admin.enter_sku_number') }}" class="form-control" value="{{ $product->sku_number }}">
+                                                    <input type="text" name="sku_number"
+                                                        placeholder="{{ __('admin.enter_sku_number') }}"
+                                                        class="form-control" value="{{ $product->sku_number }}">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="mb-3">
                                                     <label class="form-label">{{ __('admin.barcode_number') }}</label>
-                                                    <input type="text" name="barcode_number" placeholder="{{ __('admin.enter_barcode_number') }}" class="form-control" value="{{ $product->barcode_number }}">
+                                                    <input type="text" name="barcode_number"
+                                                        placeholder="{{ __('admin.enter_barcode_number') }}"
+                                                        class="form-control" value="{{ $product->barcode_number }}">
                                                 </div>
                                             </div>
                                         </div>
@@ -183,30 +209,49 @@
                                                     <label class="form-label">{{ __('admin.price') }}</label>
                                                     <div class="input-group">
                                                         <span class="input-group-text">{{ env('CURRENCY_SYMBOL') }}</span>
-                                                        <input type="text" name="price" placeholder="{{ __('admin.enter_price') }}" class="form-control __numeric_decimal" value="{{ $product->price }}">
+                                                        <input type="text" name="price"
+                                                            placeholder="{{ __('admin.enter_price') }}"
+                                                            class="form-control __numeric_decimal"
+                                                            value="{{ $product->price }}">
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-4 d-none">
                                                 <div class="mb-3">
                                                     <label class="form-label">{{ __('admin.offer_price') }}</label>
                                                     <div class="input-group">
                                                         <span class="input-group-text">{{ env('CURRENCY_SYMBOL') }}</span>
-                                                        <input type="text" name="offer_price" placeholder="{{ __('admin.enter_offer_price') }}" class="form-control __numeric_decimal" value="{{ $product->offer_price != $product->price ? $product->offer_price : '' }}">
+                                                        <input type="text" name="offer_price"
+                                                            placeholder="{{ __('admin.enter_offer_price') }}"
+                                                            class="form-control __numeric_decimal"
+                                                            value="{{ $product->offer_price != $product->price ? $product->offer_price : '' }}">
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="mb-3">
-                                                    <label class="form-label">{{ __('admin.no_of_pieces_available') }}</label>
-                                                    <input type="text" name="pieces_available" placeholder="{{ __('admin.no_of_pieces_available') }}" class="form-control __numeric" value="{{ $product->quantity }}">
+                                                    <label
+                                                        class="form-label">{{ __('admin.no_of_pieces_available') }}</label>
+                                                    <input type="text" name="pieces_available"
+                                                        placeholder="{{ __('admin.no_of_pieces_available') }}"
+                                                        class="form-control __numeric" value="{{ $product->quantity }}">
+                                                </div>
+                                            </div>
+                                               <div class="col-md-4">
+                                                <div class="mb-3">
+                                                    <label
+                                                        class="form-label">{{ __('admin.low_stock') }}</label>
+                                                    <input type="text" name="low_stock_threshold"
+                                                        placeholder="{{ __('admin.low_stock_threshold') }}"
+                                                        class="form-control __numeric" value="{{ $product->low_stock_threshold }}">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
                                     <!-- Variant Product Fields -->
-                                    <div id="variant_product_fields" style="{{ $product->has_variants ? '' : 'display: none;' }}">
+                                    <div id="variant_product_fields"
+                                        style="{{ $product->has_variants ? '' : 'display: none;' }}">
                                         <div class="row mb-4">
                                             <div class="col-md-12">
                                                 <h5>{{ __('admin.product_attributes') }}</h5>
@@ -226,14 +271,12 @@
                                                             }
                                                         @endphp
                                                         <div class="attribute-group mb-3">
-                                                            <label class="form-label fw-bold">{{ $attribute->display_name }}</label>
+                                                            <label
+                                                                class="form-label fw-bold">{{ $attribute->display_name }}</label>
                                                             <select class="form-control attribute-select select2-multiple"
-                                                                    data-attribute-id="{{ $attribute->id }}"
-                                                                    multiple="multiple">
+                                                                data-attribute-id="{{ $attribute->id }}" multiple="multiple">
                                                                 @foreach($attribute->values as $value)
-                                                                    <option value="{{ $value->id }}"
-                                                                            {{ in_array($value->id, $existingAttributeValues) ? 'selected' : '' }}
-                                                                            {{ $value->color_code ? 'data-color="' . $value->color_code . '"' : '' }}>
+                                                                    <option value="{{ $value->id }}" {{ in_array($value->id, $existingAttributeValues) ? 'selected' : '' }} {{ $value->color_code ? 'data-color="' . $value->color_code . '"' : '' }}>
                                                                         {{ $value->value }}
                                                                     </option>
                                                                 @endforeach
@@ -244,7 +287,8 @@
                                                 <button type="button" class="btn btn-primary mt-2" id="generateVariantsBtn">
                                                     <i class="bx bx-plus"></i> {{ __('admin.generate_variants') }}
                                                 </button>
-                                                <small class="text-muted d-block mt-2">{{ __('admin.generate_variants_note') }}</small>
+                                                <small
+                                                    class="text-muted d-block mt-2">{{ __('admin.generate_variants_note') }}</small>
                                             </div>
                                         </div>
 
@@ -283,31 +327,62 @@
                                                                         <td>
                                                                             <div class="variant-image-container">
                                                                                 @if($variantImage)
-                                                                                    <img src="{{ $variantImage }}" class="variant-image-preview" alt="Variant Image">
-                                                                                    <span class="remove-variant-image" data-variant-id="{{ $variant->id }}" data-image="{{ $variant->image }}">×</span>
-                                                                                    <input type="hidden" name="variants[{{ $index }}][existing_image]" value="{{ $variant->image }}">
+                                                                                    <img src="{{ $variantImage }}"
+                                                                                        class="variant-image-preview"
+                                                                                        alt="Variant Image">
+                                                                                    <span class="remove-variant-image"
+                                                                                        data-variant-id="{{ $variant->id }}"
+                                                                                        data-image="{{ $variant->image }}">×</span>
+                                                                                    <input type="hidden"
+                                                                                        name="variants[{{ $index }}][existing_image]"
+                                                                                        value="{{ $variant->image }}">
                                                                                 @endif
-                                                                                <input type="file" name="variants[{{ $index }}][image]" class="form-control mt-1 variant-image-input" accept="image/*" style="font-size: 12px;">
+                                                                                <input type="file"
+                                                                                    name="variants[{{ $index }}][image]"
+                                                                                    class="form-control mt-1 variant-image-input"
+                                                                                    accept="image/*" style="font-size: 12px;">
                                                                             </div>
                                                                         </td>
                                                                         <td>
-                                                                            <input type="hidden" name="variants[{{ $index }}][id]" value="{{ $variant->id }}">
-                                                                            <input type="text" name="variants[{{ $index }}][sku]" class="form-control variant-sku" value="{{ $variant->sku }}" required>
+                                                                            <input type="hidden" name="variants[{{ $index }}][id]"
+                                                                                value="{{ $variant->id }}">
+                                                                            <input type="text" name="variants[{{ $index }}][sku]"
+                                                                                class="form-control variant-sku"
+                                                                                value="{{ $variant->sku }}" required>
                                                                             @foreach($combinationArray as $attrId => $valueId)
-                                                                                <input type="hidden" name="variants[{{ $index }}][attributes][{{ $attrId }}]" value="{{ $valueId }}">
+                                                                                <input type="hidden"
+                                                                                    name="variants[{{ $index }}][attributes][{{ $attrId }}]"
+                                                                                    value="{{ $valueId }}">
                                                                             @endforeach
                                                                         </td>
-                                                                        <td><input type="text" name="variants[{{ $index }}][barcode]" class="form-control" value="{{ $variant->barcode }}"></td>
-                                                                        <td><input type="text" name="variants[{{ $index }}][price]" class="form-control variant-price __numeric_decimal" value="{{ $variant->price }}" required></td>
-                                                                        <td><input type="number" name="variants[{{ $index }}][quantity]" class="form-control variant-qty" value="{{ $variant->quantity }}" required></td>
-                                                                        <td><input type="number" name="variants[{{ $index }}][low_stock_threshold]" class="form-control" value="{{ $variant->low_stock_threshold ?? 5 }}"></td>
+                                                                        <td><input type="text"
+                                                                                name="variants[{{ $index }}][barcode]"
+                                                                                class="form-control"
+                                                                                value="{{ $variant->barcode }}"></td>
+                                                                        <td><input type="text" name="variants[{{ $index }}][price]"
+                                                                                class="form-control variant-price __numeric_decimal"
+                                                                                value="{{ $variant->price }}" required></td>
+                                                                        <td><input type="number"
+                                                                                name="variants[{{ $index }}][quantity]"
+                                                                                class="form-control variant-qty"
+                                                                                value="{{ $variant->quantity }}" required></td>
+                                                                        <td><input type="number"
+                                                                                name="variants[{{ $index }}][low_stock_threshold]"
+                                                                                class="form-control"
+                                                                                value="{{ $variant->low_stock_threshold ?? 5 }}">
+                                                                        </td>
                                                                         <td>
-                                                                            <select name="variants[{{ $index }}][status]" class="form-select">
-                                                                                <option value="1" {{ $variant->status == 1 ? 'selected' : '' }}>{{ __('admin.active') }}</option>
-                                                                                <option value="0" {{ $variant->status == 0 ? 'selected' : '' }}>{{ __('admin.inactive') }}</option>
+                                                                            <select name="variants[{{ $index }}][status]"
+                                                                                class="form-select">
+                                                                                <option value="1" {{ $variant->status == 1 ? 'selected' : '' }}>{{ __('admin.active') }}
+                                                                                </option>
+                                                                                <option value="0" {{ $variant->status == 0 ? 'selected' : '' }}>{{ __('admin.inactive') }}
+                                                                                </option>
                                                                             </select>
                                                                         </td>
-                                                                        <td><button type="button" class="btn btn-sm btn-danger remove-variant"><i class="bx bx-trash"></i></button></td>
+                                                                        <td><button type="button"
+                                                                                class="btn btn-sm btn-danger remove-variant"><i
+                                                                                    class="bx bx-trash"></i></button></td>
                                                                     </tr>
                                                                 @endforeach
                                                             @endif
@@ -324,16 +399,22 @@
                                             <div class="product-visibility">
                                                 <h6>{{ __('admin.product_visibility') }}:</h6>
                                                 <div class="form-check mb-1">
-                                                    <input class="form-check-input" id="is_special_offer" type="checkbox" name="is_special_offer" value="1" {{ $product->is_special_offer == 1 ? 'checked' : '' }}>
-                                                    <label for="is_special_offer" class="form-check-label">{{ __('admin.special_offer') }}</label>
+                                                    <input class="form-check-input" id="is_special_offer" type="checkbox"
+                                                        name="is_special_offer" value="1" {{ $product->is_special_offer == 1 ? 'checked' : '' }}>
+                                                    <label for="is_special_offer"
+                                                        class="form-check-label">{{ __('admin.special_offer') }}</label>
                                                 </div>
                                                 <div class="form-check mb-1">
-                                                    <input class="form-check-input" type="checkbox" name="is_clearance" id="is_clearance" value="1" {{ $product->is_clearance == 1 ? 'checked' : '' }}>
-                                                    <label for="is_clearance" class="form-check-label">{{ __('admin.clearance_item') }}</label>
+                                                    <input class="form-check-input" type="checkbox" name="is_clearance"
+                                                        id="is_clearance" value="1" {{ $product->is_clearance == 1 ? 'checked' : '' }}>
+                                                    <label for="is_clearance"
+                                                        class="form-check-label">{{ __('admin.clearance_item') }}</label>
                                                 </div>
                                                 <div class="form-check mb-1">
-                                                    <input id="is_featured" class="form-check-input" type="checkbox" name="is_featured" value="1" {{ $product->is_featured == 1 ? 'checked' : '' }}>
-                                                    <label for="is_featured" class="form-check-label">{{ __('admin.featured_product') }}</label>
+                                                    <input id="is_featured" class="form-check-input" type="checkbox"
+                                                        name="is_featured" value="1" {{ $product->is_featured == 1 ? 'checked' : '' }}>
+                                                    <label for="is_featured"
+                                                        class="form-check-label">{{ __('admin.featured_product') }}</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -342,7 +423,10 @@
                                                 <label class="form-label">{{ __('admin.shipping_fee') }}</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text">{{ env('CURRENCY_SYMBOL') }}</span>
-                                                    <input type="text" name="shipping_fee" placeholder="{{ __('admin.enter_shipping_fee') }}" class="form-control __numeric_decimal" required value="{{ $product->shipping_fee }}">
+                                                    <input type="text" name="shipping_fee"
+                                                        placeholder="{{ __('admin.enter_shipping_fee') }}"
+                                                        class="form-control __numeric_decimal" required
+                                                        value="{{ $product->shipping_fee }}">
                                                 </div>
                                             </div>
                                         </div>
@@ -352,14 +436,19 @@
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label class="form-label">{{ __('admin.return_days') }}</label>
-                                                <input type="number" name="return_days" placeholder="{{ __('admin.enter_return_days') }}" class="form-control" required value="{{ $product->return_days }}">
+                                                <input type="number" name="return_days"
+                                                    placeholder="{{ __('admin.enter_return_days') }}" class="form-control"
+                                                    required value="{{ $product->return_days }}">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label class="form-label">{{ __('admin.estimated_delivery_time') }}</label>
                                                 <div class="input-group">
-                                                    <input type="text" name="estimated_delivery_time" placeholder="{{ __('admin.enter_no_of_days') }}" class="form-control __numeric" required value="{{ $product->estimated_delivery_time }}">
+                                                    <input type="text" name="estimated_delivery_time"
+                                                        placeholder="{{ __('admin.enter_no_of_days') }}"
+                                                        class="form-control __numeric" required
+                                                        value="{{ $product->estimated_delivery_time }}">
                                                     <span class="input-group-text">{{ __('admin.days') }}</span>
                                                 </div>
                                             </div>
@@ -370,26 +459,32 @@
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label class="form-label">{{ __('admin.cover_image') }}</label>
-                                                <input type="file" name="cover_image" class="form-control" accept="image/*" onchange="previewCoverImage(this)">
+                                                <input type="file" name="cover_image" class="form-control" accept="image/*"
+                                                    onchange="previewCoverImage(this)">
                                                 <div class="mt-2">
                                                     <img id="coverPreview" class="img-thumbnail d-none" width="150">
                                                 </div>
                                                 @if ($product->cover_image)
-                                                    <img src="{{ asset(PRODUCTS_PATH . $product->cover_image) }}" class="img-thumbnail existing-cover" height="150" width="150">
+                                                    <img src="{{ asset(PRODUCTS_PATH . $product->cover_image) }}"
+                                                        class="img-thumbnail existing-cover" height="150" width="150">
                                                 @endif
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label class="form-label">{{ __('admin.gallery_images') }}</label>
-                                                <input type="file" name="gallery_images[]" class="form-control" accept="image/*" onchange="previewGalleryImages(this)" multiple>
-                                                <input type="hidden" name="removed_gallery_images" id="removedGalleryImages">
+                                                <input type="file" name="gallery_images[]" class="form-control"
+                                                    accept="image/*" onchange="previewGalleryImages(this)" multiple>
+                                                <input type="hidden" name="removed_gallery_images"
+                                                    id="removedGalleryImages">
                                                 <div id="galleryPreview" class="row mt-2">
                                                     @if (!empty($product->gallery))
                                                         @foreach ($product->gallery as $key => $val)
                                                             <div class="col-2 mb-3 gallery-item position-relative">
                                                                 <span class="remove-gallery-image" data-id="{{ $val->id }}">×</span>
-                                                                <img src="{{ asset(PRODUCTS_PATH . $val->image) }}" class="img-thumbnail preview-image mb-2" height="150" width="150">
+                                                                <img src="{{ asset(PRODUCTS_PATH . $val->image) }}"
+                                                                    class="img-thumbnail preview-image mb-2" height="150"
+                                                                    width="150">
                                                             </div>
                                                         @endforeach
                                                     @endif
@@ -402,16 +497,19 @@
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label class="form-label">{{ __('admin.item_description') }}</label>
-                                                <textarea class="form-control" id="descriptionEditor" name="description">{{ $product->description }}</textarea>
+                                                <textarea class="form-control" id="descriptionEditor"
+                                                    name="description">{{ $product->description }}</textarea>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <div class="mb-3">
                                                 <label class="form-label">{{ __('admin.type') }}</label>
                                                 <select name="type" class="form-select">
-                                                    <option value="Nuevo" {{ $product->type == 'Nuevo' ? 'selected' : '' }}>{{ __('admin.new') }}</option>
+                                                    <option value="Nuevo" {{ $product->type == 'Nuevo' ? 'selected' : '' }}>
+                                                        {{ __('admin.new') }}</option>
                                                     <option value="Reacondicionado" {{ $product->type == 'Reacondicionado' ? 'selected' : '' }}>{{ __('admin.refurbished') }}</option>
-                                                    <option value="Usado" {{ $product->type == 'Usado' ? 'selected' : '' }}>{{ __('admin.used') }}</option>
+                                                    <option value="Usado" {{ $product->type == 'Usado' ? 'selected' : '' }}>
+                                                        {{ __('admin.used') }}</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -419,8 +517,10 @@
                                             <div class="mb-3">
                                                 <label class="form-label">{{ __('admin.status') }}</label>
                                                 <select name="status" class="form-select">
-                                                    <option value="1" {{ $product->status == '1' ? 'selected' : '' }}>{{ __('admin.active') }}</option>
-                                                    <option value="0" {{ $product->status == '0' ? 'selected' : '' }}>{{ __('admin.inactive') }}</option>
+                                                    <option value="1" {{ $product->status == '1' ? 'selected' : '' }}>
+                                                        {{ __('admin.active') }}</option>
+                                                    <option value="0" {{ $product->status == '0' ? 'selected' : '' }}>
+                                                        {{ __('admin.inactive') }}</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -428,7 +528,8 @@
 
                                     <div class="row d-flex justify-content-center my-5">
                                         <div class="col-sm-2">
-                                            <button type="submit" class="btn btn-primary w-md">{{ __('admin.submit') }}</button>
+                                            <button type="submit"
+                                                class="btn btn-primary w-md">{{ __('admin.submit') }}</button>
                                         </div>
                                     </div>
                                 </form>
@@ -446,7 +547,7 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('.single-select').select2({
                 theme: 'bootstrap-5',
                 width: '100%',
@@ -474,7 +575,7 @@
             })
             .catch(error => console.error(error));
 
-        $('input[name="product_type"]').on('change', function() {
+        $('input[name="product_type"]').on('change', function () {
             if ($(this).val() == 'simple') {
                 $('#simple_product_fields').slideDown();
                 $('#variant_product_fields').slideUp();
@@ -500,11 +601,11 @@
             return (skuBase + '-' + combinationStr + '-' + index).toUpperCase();
         }
 
-        $('#generateVariantsBtn').on('click', function() {
+        $('#generateVariantsBtn').on('click', function () {
             let selectedAttributes = {};
             let hasAttributes = false;
 
-            $('.attribute-select').each(function() {
+            $('.attribute-select').each(function () {
                 let attributeId = $(this).data('attribute-id');
                 let selectedValues = $(this).val();
                 if (selectedValues && selectedValues.length > 0) {
@@ -535,21 +636,66 @@
 
                 row.append($('<td>').html(combinationHtml));
 
+                /* IMAGE COLUMN */
+                row.append(`
+                        <td>
+                            <input type="file"
+                                name="variants[${index}][image]"
+                                class="form-control variant-image-input"
+                                accept="image/*"
+                                onchange="previewVariantImage(this, ${index})">
+
+                            <div class="mt-2">
+                                <img id="variantImagePreview_${index}"
+                                    class="img-thumbnail d-none"
+                                    width="50">
+                            </div>
+
+                            <input type="hidden"
+                                name="variants[${index}][existing_image]"
+                                value="">
+                        </td>
+                    `);
+
+                /* SKU COLUMN */
                 let skuCell = $('<td>');
-                skuCell.append(`<input type="text" name="variants[${index}][sku]" class="form-control variant-sku" value="${generateSku(combination, index)}" required>`);
+
+                skuCell.append(`
+                        <input type="text"
+                            name="variants[${index}][sku]"
+                            class="form-control variant-sku"
+                            value="${generateSku(combination, index)}"
+                            required>
+                    `);
                 attributeIds.forEach(attrId => {
                     let valueId = combination[attrId];
-                    skuCell.append(`<input type="hidden" name="variants[${index}][attributes][${attrId}]" value="${valueId}">`);
+                    skuCell.append(`
+                            <input type="hidden"
+                                name="variants[${index}][attributes][${attrId}]"
+                                value="${valueId}">
+                        `);
                 });
                 row.append(skuCell);
-
+                /* OTHER COLUMNS */
                 row.append(`<td><input type="text" name="variants[${index}][barcode]" class="form-control"></td>`);
                 row.append(`<td><input type="text" name="variants[${index}][price]" class="form-control variant-price __numeric_decimal" required></td>`);
                 row.append(`<td><input type="number" name="variants[${index}][quantity]" class="form-control variant-qty" value="0" required></td>`);
                 row.append(`<td><input type="number" name="variants[${index}][low_stock_threshold]" class="form-control" value="5"></td>`);
-                row.append(`<td><select name="variants[${index}][status]" class="form-select"><option value="1">{{ __("admin.active") }}</option><option value="0">{{ __("admin.inactive") }}</option></select></td>`);
-                row.append(`<td><button type="button" class="btn btn-sm btn-danger remove-variant"><i class="bx bx-trash"></i></button></td>`);
-
+                row.append(`
+                        <td>
+                            <select name="variants[${index}][status]" class="form-select">
+                                <option value="1">{{ __("admin.active") }}</option>
+                                <option value="0">{{ __("admin.inactive") }}</option>
+                            </select>
+                        </td>
+                    `);
+                row.append(`
+                        <td>
+                            <button type="button" class="btn btn-sm btn-danger remove-variant">
+                                <i class="bx bx-trash"></i>
+                            </button>
+                        </td>
+                    `);
                 $('#variantsTableBody').append(row);
             });
 
@@ -574,13 +720,13 @@
         }
 
         function bindVariantEvents() {
-            $('.remove-variant').off('click').on('click', function() {
+            $('.remove-variant').off('click').on('click', function () {
                 if (confirm('{{ __("admin.remove_variant_confirmation") }}')) {
                     $(this).closest('tr').remove();
                 }
             });
 
-            $('.remove-variant-image').off('click').on('click', function() {
+            $('.remove-variant-image').off('click').on('click', function () {
                 if (confirm('{{ __("admin.remove_variant_image_confirmation") }}')) {
                     let variantId = $(this).data('variant-id');
                     let imagePath = $(this).data('image');
@@ -591,7 +737,7 @@
             });
         }
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             let categoryId = $('.__category').val();
             let selectedSubcategory = $('.__subcategory').data('selected');
             let route = $('.__category').data('route');
@@ -601,7 +747,7 @@
                     url: route,
                     type: 'POST',
                     data: { category_id: categoryId, selected: selectedSubcategory, title: '-Select-', _token: '{{ csrf_token() }}' },
-                    success: function(response) {
+                    success: function (response) {
                         if (response.success) {
                             $('.__subcategory').html(response.options);
                             $('.__subcategory').val(selectedSubcategory).trigger('change');
@@ -612,7 +758,7 @@
             }
         });
 
-        $('body').on('change', '.__category', function(e) {
+        $('body').on('change', '.__category', function (e) {
             var value = $(this).val();
             if ($('.__category').length > 0 && value != '') {
                 let route = $(this).attr('data-route');
@@ -620,7 +766,7 @@
                     url: route,
                     type: 'POST',
                     data: { category_id: value, title: '-Select-', _token: '{{ csrf_token() }}' },
-                    success: function(response) {
+                    success: function (response) {
                         if (response.success) {
                             $('.__subcategory').html(response.options);
                             $('.__subcategory').select2({ theme: 'bootstrap-5', width: '100%', placeholder: '{{ __("admin.select_an_option") }}', allowClear: true });
@@ -661,7 +807,7 @@
         }
 
         let removedGallery = [];
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             if (e.target.classList.contains('remove-gallery-image')) {
                 const imageId = e.target.dataset.id;
                 if (confirm('{{ __("admin.remove_gallery_image_confirmation") }}')) {
@@ -674,17 +820,17 @@
             }
         });
 
-        $('#product_name').on('keyup', function() {
+        $('#product_name').on('keyup', function () {
             let slug = $(this).val().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
             $('#product_slug').val(slug);
         });
 
-        $('#regenSlug').on('click', function() {
+        $('#regenSlug').on('click', function () {
             let slug = $('#product_name').val().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
             $('#product_slug').val(slug);
         });
 
-        $('#productForm').on('submit', function(e) {
+        $('#productForm').on('submit', function (e) {
             if ($('#has_variants').val() == '1') {
                 if ($('#variantsTableBody tr').length === 0) {
                     e.preventDefault();
@@ -693,7 +839,7 @@
                 }
 
                 let valid = true;
-                $('.variant-price').each(function() {
+                $('.variant-price').each(function () {
                     if (!$(this).val() || parseFloat($(this).val()) <= 0) {
                         valid = false;
                         toastr.error('{{ __("admin.please_enter_valid_price_for_all_variants") }}');

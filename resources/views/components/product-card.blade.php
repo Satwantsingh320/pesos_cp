@@ -11,7 +11,9 @@
 
     $priceDisplay = $product->price_display;
     $totalStock = $product->total_quantity;
+    $lowStockThreshold = $product->low_threshold;
 @endphp
+
 
 <style>
     .product-price {
@@ -78,7 +80,7 @@
             </div>
             <div class="product-details">
                 <div class="product-title">
-                    {{ $product->name }}
+                    {{ $product->name }} -{{ $lowStockThreshold }}
                 </div>
 
                 {{-- Price Display --}}
@@ -105,7 +107,7 @@
                         <div class="stock-badge out-of-stock">
                             {{ __('website.product_out_of_stock') }}
                         </div>
-                    @elseif($totalStock <= 10 && $totalStock > 0)
+                    @elseif($lowStockThreshold > 0 && $totalStock <= $lowStockThreshold && $totalStock > 0)
                         <div class="stock-badge low-stock">
                             {{ __('website.product_last_units') }}
                         </div>

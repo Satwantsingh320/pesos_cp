@@ -60,6 +60,7 @@ class AuthController extends Controller
         if (Auth::guard('customer')->attempt($credentials)) {
             $sessionId = session()->getId();
             $customerId = Auth::id();
+
             DB::table('carts')
                 ->where('session_id', $sessionId)
                 ->whereNull('customer_id')

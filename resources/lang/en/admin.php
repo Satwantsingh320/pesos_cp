@@ -621,6 +621,8 @@ return [
     'Failed to assign VIP: ' => 'Failed to assign VIP: ',
     'VIP removed successfully from ' => 'VIP removed successfully from ',
     'vip_assigned_successfully' => 'VIP assigned successfully to :name. Please set manual prices for products.',
-
+    'generate_variants_note' => 'Select product attributes and generate all possible variant combinations automatically.',
+    'variants_generated_successfully' => 'Variants Generated Successfully',
+    'low_stock_threshold' => 'Low Stock Threshold',
 
 ];
