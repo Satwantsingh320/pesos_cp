@@ -11,6 +11,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\OfferController;
+use App\Http\Controllers\VariantAttributeController;
 
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
@@ -25,6 +26,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Website\HomeController as WebsiteHomeController;
 use App\Http\Controllers\Website\ProductController as WebsiteProductController;
 use App\Http\Controllers\Website\WishlistController;
+
 
 
 Route::get('clear', function () {
@@ -114,7 +116,7 @@ Route::prefix('admin')->group(function () {
         Route::post('settings/update/{id}', [SettingController::class, 'updateSettings'])->name('settings.update');
 
         //Special Offers
-        Route::resource('offers', OfferController::class);
+        Route::resource('banners', OfferController::class);
         Route::post('offers/status/{id?}', [OfferController::class, 'status'])->name('offers.status');
         Route::post('offers/toggle-all-status/{status?}', [OfferController::class, 'toggleAllStatus'])->name('offers.toggle-all-status');
 
@@ -146,6 +148,20 @@ Route::prefix('admin')->group(function () {
             Route::get('/product/{id}/variants', [VipController::class, 'getProductVariants'])->name('product.variants');
             Route::get('/product/{id}/price', [VipController::class, 'getProductPrice'])->name('product.price');
             Route::get('/vip/customer/{id}/products', [VipController::class, 'getCustomerProducts'])->name('customer.products');
+        });
+
+        Route::name('admin.')->group(function () {
+            Route::get('variant-attributes', [VariantAttributeController::class, 'index'])->name('variant-attributes.index');
+            Route::get('variant-attributes/create', [VariantAttributeController::class, 'create'])->name('variant-attributes.create');
+            Route::post('variant-attributes', [VariantAttributeController::class, 'store'])->name('variant-attributes.store');
+            Route::get('variant-attributes/{id}/edit', [VariantAttributeController::class, 'edit'])->name('variant-attributes.edit');
+            Route::put('variant-attributes/{id}', [VariantAttributeController::class, 'update'])->name('variant-attributes.update');
+            Route::delete('variant-attributes/{id}', [VariantAttributeController::class, 'destroy'])->name('variant-attributes.destroy');
+
+            Route::post('variant-attributes/{attributeId}/values', [VariantAttributeController::class, 'storeValue'])->name('variant-attributes.values.store');
+            Route::put('variant-attribute-values/{id}', [VariantAttributeController::class, 'updateValue'])->name('variant-attribute-values.update');
+            Route::delete('variant-attribute-values/{id}', [VariantAttributeController::class, 'destroyValue'])->name('variant-attribute-values.destroy');
+            Route::post('variant-attribute-values/reorder', [VariantAttributeController::class, 'reorderValues'])->name('variant-attribute-values.reorder');
         });
 
         //notifications

@@ -5,6 +5,13 @@
 @extends('website.layouts.layouts')
 
 @section('content')
+    <style>
+        .carousel-item img {
+            height: 800px;
+            width: 100%;
+            object-fit: cover;
+        }
+    </style>
     @php
         $sliders = \App\Models\Offer::where('status', 1)->whereNotNull('banner')->orderBy('id', 'desc')->take(5)->get();
       @endphp
@@ -37,22 +44,7 @@
                                     <p>{!! \Illuminate\Support\Str::limit($slider->description, 120) !!}</p>
                                 @endif
 
-                                <div class="mb-2">
-                                    <span class="fw-bold text-danger fs-5">
-                                        {{ CURRENCY }}{{ number_format($slider->offer_price, 2) }}
-                                    </span>
 
-                                    <span class="text-muted text-decoration-line-through ms-2">
-                                        {{ CURRENCY }}{{ number_format($slider->price, 2) }}
-                                    </span>
-                                </div>
-
-                                <div class="banner-btn">
-                                    @php $product = \App\Models\Product::select('slug')->find($slider->product_id); @endphp
-                                    <a href="{{ url('product/' . $product->slug) }}">
-                                        {{ __('website.explore_now') }}
-                                    </a>
-                                </div>
                             </div>
                         </div>
                     @endforeach

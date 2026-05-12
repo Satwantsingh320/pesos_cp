@@ -47,7 +47,7 @@ class CategoryController extends Controller
 
         $inputs = $request->all();
         $rules = [
-            'name' => 'required|string|unique:category,name',
+            'name' => 'required|string|unique:categories,name',
             'status' => 'in:0,1'
         ];
         $validation = validator($inputs, $rules);
@@ -97,7 +97,7 @@ class CategoryController extends Controller
             'name' => [
                 'required',
                 'string',
-                Rule::unique('category', 'name')->ignore($category->id),
+                Rule::unique('categories', 'name')->ignore($category->id),
             ],
             'status' => 'required|boolean',
         ]);

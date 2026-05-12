@@ -24,4 +24,11 @@ class VariantAttributeValue extends Model
     {
         return $this->belongsTo(VariantAttribute::class, 'attribute_id');
     }
+    public function getImageUrlAttribute()
+    {
+        if ($this->image) {
+            return asset('storage/' . $this->image);
+        }
+        return null;
+    }
 }

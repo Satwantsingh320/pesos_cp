@@ -624,5 +624,26 @@ return [
     'generate_variants_note' => 'Select product attributes and generate all possible variant combinations automatically.',
     'variants_generated_successfully' => 'Variants Generated Successfully',
     'low_stock_threshold' => 'Low Stock Threshold',
+    'add_banner' => 'Add Banner',
+    'filter_banners' => 'Filter Banners',
+    'update_banner_details' => 'Update Banner Details',
+    'select_attributes_for_variants' => 'Select Attributes For Variants',
+    'options' => 'options',
+    'additional_information' => 'Additional Information',
+    'update_product' => 'Update Product',
+    'simple_product_information' => 'Simple Product Information',
+    'variant-attributes' => 'Variant Attributes',
+    'Value deleted successfully.' => 'Value deleted successfully.',
+    'Value updated successfully.' => 'Value updated successfully.',
+    'Value added successfully.' => 'Value added successfully.',
+    'Attribute deleted successfully.' => 'Attribute deleted successfully.',
+    'Attribute updated successfully.' => 'Attribute updated successfully.',
+    'Attribute created successfully.' => 'Attribute created successfully.',
+    '' => '',
+    '' => '',
+
+
+
+
 
 ];

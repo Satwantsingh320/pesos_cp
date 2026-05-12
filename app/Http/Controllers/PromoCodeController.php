@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Brands;
+use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Offer;
 use App\Models\PromoCode;

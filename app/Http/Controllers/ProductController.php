@@ -24,6 +24,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
+
         $sortEntity = (new Product())->sortEntity;
         $sortOrder = (new Product())->sortOrder;
         $result = null;
@@ -68,9 +69,9 @@ class ProductController extends Controller
             'type' => 'required',
             'estimated_delivery_time' => 'required|numeric',
             'status' => 'in:0,1',
-            'cover_image' => 'required|mimes:jpg,jpeg,png,svg',
+            'cover_image' => 'required|mimes:jpg,jpeg,png,svg,webp',
             'gallery_images' => 'required|array|min:1',
-            'gallery_images.*' => 'mimes:jpg,jpeg,png,svg',
+            'gallery_images.*' => 'mimes:jpg,jpeg,png,svg,webp',
             'is_special_offer' => 'sometimes|boolean',
             'is_clearance' => 'sometimes|boolean',
             'is_featured' => 'sometimes|boolean',
@@ -79,12 +80,12 @@ class ProductController extends Controller
         ];
 
         // Variant validation if product has variants
-        if ($request->has('has_variants')) {
+        if ($request->has('has_variants') && $request->has_variants == '1') {
             $rules['variants'] = 'required|array|min:1';
             $rules['variants.*.sku'] = 'required|string|distinct';
             $rules['variants.*.price'] = 'required|numeric|min:0';
             $rules['variants.*.quantity'] = 'required|integer|min:0';
-            $rules['variants.*.image'] = 'nullable|mimes:jpg,jpeg,png,svg';
+            $rules['variants.*.image'] = 'nullable|mimes:jpg,jpeg,png,svg,webp';
         } else {
             // Simple product validation
             $rules['price'] = 'required|numeric|min:1';
@@ -134,7 +135,7 @@ class ProductController extends Controller
             ];
 
             // Handle simple product data
-            if (!$request->has('has_variants')) {
+            if ($request->has_variants == 0) {
                 $productData['price'] = $inputs['price'];
                 $productData['offer_price'] = $inputs['offer_price'] ?? $inputs['price'];
                 $productData['quantity'] = $inputs['pieces_available'];
@@ -145,7 +146,7 @@ class ProductController extends Controller
             $product = Product::create($productData);
 
             // Create variants if product has variants
-            if ($request->has('has_variants') && $request->has('variants')) {
+            if ($request->has_variants == 1) {
                 $this->createVariants($product, $request->variants);
                 // Update price range
                 $product->updatePriceRange();
@@ -289,6 +290,8 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
+
+
         $rules = [
             'category' => 'required|integer|exists:categories,id',
             'subcategory' => 'required|integer|exists:sub_categories,id',
@@ -298,9 +301,9 @@ class ProductController extends Controller
             'description' => 'nullable',
             'estimated_delivery_time' => 'required|numeric',
             'status' => 'required|in:0,1',
-            'cover_image' => 'nullable|mimes:jpg,jpeg,png,svg',
+            'cover_image' => 'nullable|mimes:jpg,jpeg,png,svg,webp',
             'gallery_images' => 'nullable|array',
-            'gallery_images.*' => 'mimes:jpg,jpeg,png,svg',
+            'gallery_images.*' => 'mimes:jpg,jpeg,png,svg,webp',
             'is_special_offer' => 'sometimes|boolean',
             'is_clearance' => 'sometimes|boolean',
             'is_featured' => 'sometimes|boolean',
@@ -314,7 +317,7 @@ class ProductController extends Controller
             $rules['variants.*.sku'] = 'required|string|distinct';
             $rules['variants.*.price'] = 'required|numeric|min:0';
             $rules['variants.*.quantity'] = 'required|integer|min:0';
-            $rules['variants.*.image'] = 'nullable|mimes:jpg,jpeg,png,svg';
+            $rules['variants.*.image'] = 'nullable|mimes:jpg,jpeg,png,svg,webp';
         } else {
             $rules['price'] = 'required|numeric|min:1';
             //$rules['offer_price'] = 'nullable|numeric|lt:price';

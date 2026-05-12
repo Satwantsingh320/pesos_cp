@@ -25,7 +25,7 @@ class VariantAttribute extends Model
      */
     public function values(): HasMany
     {
-        return $this->hasMany(VariantAttributeValue::class, 'attribute_id');
+        return $this->hasMany(VariantAttributeValue::class, 'attribute_id')->orderBy('position');
     }
 
     /**

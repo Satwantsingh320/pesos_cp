@@ -105,6 +105,7 @@
                                 }
                                 if (!in_array($attrValue, $attributeOptions[$attrName])) {
                                     $attributeOptions[$attrName][] = $attrValue;
+
                                 }
                             }
                         }
@@ -163,7 +164,7 @@
 
                         {{-- Main Image --}}
                         <div class="main-image text-center">
-                            <a data-fancybox="gallery" data-caption="{{ $product->name }}"
+                            <a data-fancybox="gallery" data-caption="{{ $product->name }}" id="mainImageLink"
                                 href='{{ $selectedVariant && $selectedVariant->image ? asset('uploads/products/' . $selectedVariant->image) : $product->CoverImageUrl }}'>
                                 <img id="mainProductImage"
                                     src="{{ $selectedVariant && $selectedVariant->image ? asset('uploads/products/' . $selectedVariant->image) : $product->CoverImageUrl }}"
@@ -175,12 +176,11 @@
                         @if ($product->gallery->count())
                             <div class="thumbnail-wrapper mt-3 d-flex gap-2 flex-wrap">
                                 @foreach ($product->gallery as $key => $image)
-                                    <a data-fancybox="gallery" data-caption="{{ $product->name }}"
-                                        href='{{ asset('uploads/products/' . $image->image) }}'>
-                                        <img src="{{ asset('uploads/products/' . $image->image) }}"
-                                            class="img-thumbnail thumb-img @if ($key == 0) active-thumb @endif"
-                                            style="width:80px; cursor:pointer;" onclick="changeImage(this)">
-                                    </a>
+
+                                    <img src="{{ asset('uploads/products/' . $image->image) }}"
+                                        class="img-thumbnail thumb-img @if ($key == 0) active-thumb @endif"
+                                        style="width:80px; cursor:pointer;" onclick="changeImage(this)">
+
                                 @endforeach
                             </div>
                         @endif
@@ -283,6 +283,7 @@
                                             </span>
                                             <div class="variant-options">
                                                 @foreach($values as $value)
+
                                                     @php
                                                         $matchingVariant = null;
                                                         foreach ($variants as $variant) {
@@ -311,7 +312,7 @@
                                                             title="{{ $value }} {{ !$isAvailable ? '(' . __('website.out_of_stock_label') . ')' : '' }}">
                                                         </div>
                                                     @else
-                                                        <div class="variant-option-btn {{ $isSelected ? 'active' : '' }} {{ !$isAvailable ? 'disabled' : '' }}"
+                                                        <div class="variant-option-btn {{ $isSelected ? 'active' : '' }} {{ !$isAvailable ? 'disabled' : '' }} {{ $matchingVariant->id }}"
                                                             data-attribute="{{ $attributeName }}" data-value="{{ $value }}"
                                                             data-variant-id="{{ $matchingVariant ? $matchingVariant->id : '' }}"
                                                             onclick="selectVariant('{{ $matchingVariant ? $matchingVariant->id : '' }}')">
@@ -581,22 +582,30 @@
         });
 
         function changeImage(element) {
+
             const mainImage = document.getElementById('mainProductImage');
-            const mainLink = mainImage.closest('a');
+            const mainLink = document.getElementById('mainImageLink');
 
-            if (mainImage && element) {
-                mainImage.src = element.src;
-                if (mainLink) {
-                    mainLink.href = element.parentElement.href;
-                }
+            if (!mainImage || !element) return;
 
-                document.querySelectorAll('.thumb-img').forEach(img => {
-                    img.classList.remove('active-thumb');
-                });
-                element.classList.add('active-thumb');
+            const imageUrl = element.dataset.full || element.src;
+
+            // Change visible image
+            mainImage.src = imageUrl;
+
+            // Update fancybox target
+            if (mainLink) {
+                mainLink.href = imageUrl;
+                mainLink.setAttribute('data-src', imageUrl);
             }
-        }
 
+            // Active thumb
+            document.querySelectorAll('.thumb-img').forEach(img => {
+                img.classList.remove('active-thumb');
+            });
+
+            element.classList.add('active-thumb');
+        }
         // Variant selection function
         function selectVariant(variantId) {
             if (!variantId) return;

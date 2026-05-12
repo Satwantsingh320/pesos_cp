@@ -13,12 +13,6 @@ class Offer extends Model
     public $sortEntity = 'offers.id';
 
 
-    public function product()
-    {
-        return $this->belongsTo(Product::class)->withDefault();
-        ;
-    }
-
     public function pagination(Request $request)
     {
         $filter = 1;
@@ -27,16 +21,13 @@ class Offer extends Model
         $sortEntity = $this->sortEntity;
 
 
-        $query = Offer::with('product', 'product.category', 'product.subcategory'); // relation loaded
+        $query = Offer::query(); // relation loaded
         if ($request->has('perPage') && $request->get('perPage') != '') {
             $perPage = $request->get('perPage');
         }
         if ($request->has('keyword') && $request->get('keyword') != '') {
             $filter .= " and (
-                offers.title like '%" . addslashes($request->get('keyword')) . "%'
-                or products.name like '%" . addslashes($request->get('keyword')) . "%'
-                or sub_categories.name like '%" . addslashes($request->get('keyword')) . "%'
-                or categories.name like '%" . addslashes($request->get('keyword')) . "%')";
+                offers.title like '%" . addslashes($request->get('keyword')) . "%')";
         }
 
 

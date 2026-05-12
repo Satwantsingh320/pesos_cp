@@ -89,8 +89,14 @@
                                             <tr id="cart-row-{{ $item->id }}">
                                                 <td>
                                                     <div class="product-img-cart">
-                                                        <img src="{{ $item->product->cover_image_url }}" class="img-fluid"
-                                                            alt="{{ __('website.product') }}">
+                                                        @if($variantDisplay && !empty($item->variant->image))
+                                                            <img src="{{ asset('uploads/products') . '/' . $item->variant->image }}"
+                                                                class="img-fluid" alt="{{ __('website.product') }}">
+                                                        @else
+                                                            <img src="{{ $item->product->cover_image_url }}" class="img-fluid"
+                                                                alt="{{ __('website.product') }}">
+                                                        @endif
+
                                                     </div>
                                                 </td>
                                                 <td>

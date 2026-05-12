@@ -5,12 +5,12 @@
         @php
             $counts = Cache::remember('sidebar_counts', 10, function () {
                 return DB::selectOne("
-                                                                    SELECT
-                                                                      (SELECT COUNT(*) FROM orders WHERE order_status IN (0,1))
-                        AS orders_count,
-                                                                        (SELECT COUNT(*) FROM product_questions WHERE is_answered = 0 AND is_approved = 0) AS questions_count,
-                                                                        (SELECT COUNT(*) FROM refund_requests WHERE status = 0) AS refunds_count
-                                                                ");
+                                                                                                                                SELECT
+                                                                                                                                  (SELECT COUNT(*) FROM orders WHERE order_status IN (0,1))
+                                                                                    AS orders_count,
+                                                                                                                                    (SELECT COUNT(*) FROM product_questions WHERE is_answered = 0 AND is_approved = 0) AS questions_count,
+                                                                                                                                    (SELECT COUNT(*) FROM refund_requests WHERE status = 0) AS refunds_count
+                                                                                                                            ");
             });
         @endphp
 
@@ -92,9 +92,9 @@
 
 
                 <li>
-                    <a href="{{ route('offers.index') }}" class="waves-effect">
+                    <a href="{{ route('banners.index') }}" class="waves-effect">
                         <i class="bxr bx-discount"></i>
-                        <span key="t-vendors">{{ __('admin.special_offers') }}</span>
+                        <span key="t-vendors">{{ __('admin.banners') }}</span>
                     </a>
                 </li>
 
@@ -104,7 +104,12 @@
                         <span key="t-vendors">{{ __('admin.VIP Customers') }}</span>
                     </a>
                 </li>
-
+                <li>
+                    <a href="{{ route('admin.variant-attributes.index') }}" class="waves-effect">
+                        <i class="bxr bx-discount"></i>
+                        <span key="t-vendors">{{ __('admin.variant-attributes') }}</span>
+                    </a>
+                </li>
 
 
                 <li>

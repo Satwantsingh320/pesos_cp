@@ -2,12 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Brands;
-use App\Models\Category;
 use App\Models\Offer;
-use App\Models\ProductGallery;
-use App\Models\Product;
-use App\Models\SubCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -26,9 +21,7 @@ class OfferController extends Controller
         if ($request->ajax()) {
             $sortEntity = $request->sortEntity;
             $sortOrder = $request->sortOrder;
-
             $result = (new Offer)->pagination($request);
-
             return view('admin.offers.pagination', compact('result', 'sortOrder', 'sortEntity'));
         }
         $url = url()->full();
@@ -38,11 +31,10 @@ class OfferController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        $categories = (new Category())->service();
-        $brands = (new Brands())->service();
-        return view('admin.offers.create', compact('categories', 'brands'));
+
+        return view('admin.offers.create');
     }
 
     /**
@@ -52,15 +44,10 @@ class OfferController extends Controller
     {
         $inputs = $request->all();
         $rules = [
-            'category' => 'required|integer|exists:category,id',
-            'subcategory' => 'required|integer|exists:subcategory,id',
-            'product' => 'required|integer|exists:products,id',
             'title' => 'required|string',
-            'price' => 'required|numeric|min:1',
-            'offer_price' => 'required|numeric|lt:price',
             'description' => 'nullable',
             'status' => 'in:0,1',
-            'banner' => 'required|mimes:jpg,jpeg,png,svg'
+            'banner' => 'required|mimes:jpg,jpeg,png,svg,webp'
         ];
         $validation = validator($inputs, $rules);
         if ($validation->fails()) {
@@ -80,21 +67,14 @@ class OfferController extends Controller
             $bannerImg = $fileName;
         }
         Offer::create([
-            'category_id' => $inputs['category'],
-            'subcategory_id' => $inputs['subcategory'],
-            'product_id' => $inputs['product'],
             'title' => $inputs['title'],
-            'price' => $inputs['price'],
-            'offer_price' => $inputs['offer_price'],
             'description' => $inputs['description'],
             'status' => $inputs['status'],
             'banner' => $bannerImg
         ]);
-        $product = Product::find($inputs['product']);
-        $product->offer_price = $inputs['offer_price'];
-        $product->save();
+
         DB::commit();
-        return redirect()->route('offers.index')->with('success', __('admin.offer_created_successfully'));
+        return redirect()->route('banners.index')->with('success', __('admin.offer_created_successfully'));
 
 
         // } catch (\Exception $e) {
@@ -106,22 +86,19 @@ class OfferController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Offer $offer)
+    public function show(Offer $banner)
     {
-        $offer->load('product', 'product.category', 'product.subcategory');
-        $categories = (new Category())->service();
 
-        return view('admin.offers.show', compact('offer', 'categories'));
+        return view('admin.offers.show', compact('banner'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Offer $offer)
+    public function edit(Offer $banner)
     {
-        $offer->load('product', 'product.category', 'product.subcategory');
-        $categories = (new Category())->service();
-        return view('admin.offers.edit', compact('offer', 'categories'));
+
+        return view('admin.offers.edit', compact('banner'));
     }
 
     /**
@@ -130,28 +107,17 @@ class OfferController extends Controller
     public function update(Request $request, Offer $offer)
     {
         $rules = [
-            'category' => 'required|integer|exists:category,id',
-            'subcategory' => 'required|integer|exists:subcategory,id',
-            'product' => 'required|integer|exists:products,id',
             'title' => 'required|string',
-            'price' => 'required|numeric|min:1',
-            'offer_price' => 'required|numeric|lt:price',
             'description' => 'nullable',
             'status' => 'in:0,1',
-            'banner' => 'nullable|mimes:jpg,jpeg,png,svg'
+            'banner' => 'nullable|mimes:jpg,jpeg,png,svg,webp'
         ];
 
         $request->validate($rules);
 
         try {
             DB::beginTransaction();
-
-            $offer->category_id = $request->category;
-            $offer->subcategory_id = $request->subcategory;
-            $offer->product_id = $request->product;
             $offer->title = $request->title;
-            $offer->price = $request->price;
-            $offer->offer_price = $request->offer_price;
             $offer->description = $request->description;
             $offer->status = $request->status;
 
@@ -165,12 +131,8 @@ class OfferController extends Controller
                 $offer->banner = $fileName;
             }
 
-
             /* UPDATE Offer */
             $offer->save();
-            $product = Product::find($request->product);
-            $product->offer_price = $request->offer_price;
-            $product->save();
 
             DB::commit();
 
