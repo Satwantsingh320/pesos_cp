@@ -45,7 +45,7 @@ class RefundRequestController extends Controller
         }
         $refund = RefundRequest::create([
             'refund_number' => 'RF-' . strtoupper(Str::random(8)),
-            'order_id' => $item->orders_id ?? $item->order_id,
+            'order_id' => $item->order_id ?? $item->order_id,
             'order_item_id' => $item->id,
             'customer_id' => auth()->id(),
             'amount' => $item->price * $item->quantity,

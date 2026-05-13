@@ -50,6 +50,10 @@
             animation: spin 1s linear infinite;
         }
 
+        .variant-swatch.active {
+            border: 2px solid black !important;
+        }
+
         @keyframes spin {
             0% {
                 transform: rotate(0deg);
@@ -105,7 +109,7 @@
                                 }
                                 if (!in_array($attrValue, $attributeOptions[$attrName])) {
                                     $attributeOptions[$attrName][] = $attrValue;
-
+                                    // sort($attributeOptions[$attrName], SORT_NATURAL | SORT_FLAG_CASE);
                                 }
                             }
                         }
@@ -196,6 +200,7 @@
                                 @php
                                     $regularPrice = $selectedVariant->offer_price ?? $selectedVariant->price;
                                     $vipPrice = getVipPrice($product, $selectedVariant, $customer);
+
                                     $displayPrice = $vipPrice ?? $regularPrice;
                                     $originalPrice = ($selectedVariant->offer_price && $selectedVariant->offer_price < $selectedVariant->price)
                                         ? $selectedVariant->price

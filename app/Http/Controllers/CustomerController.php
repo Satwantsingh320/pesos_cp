@@ -311,7 +311,7 @@ class CustomerController extends Controller
     }
     public function orderDetail($id)
     {
-        $order = Orderfind($id);
+        $order = Order::find($id);
         $order->load('customer', 'items.product');
         return view('website.order-detail', compact('order'));
     }

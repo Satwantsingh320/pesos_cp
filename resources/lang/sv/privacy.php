@@ -12,7 +12,7 @@ return [
         <h4>1. Personuppgiftsansvarig</h4>
         <p>
             <strong>Företagsnamn:</strong> ' . config('app.name') . '<br>
-            <strong>E-post:</strong> contacto@vaakgolvslip.se<br>
+            <strong>E-post:</strong> ' . __('website.email_address') . '<br>
         </p>
 
         <h4>2. Uppgifter vi samlar in</h4>
@@ -67,7 +67,7 @@ return [
         </ul>
 
         <p>
-            Du kan utöva dina rättigheter genom att skicka en begäran till contacto@vaakgolvslip.se, med en kopia av ditt identitetsdokument.
+            Du kan utöva dina rättigheter genom att skicka en begäran till ' . __('website.email_address') . ', med en kopia av ditt identitetsdokument.
         </p>
 
         <h4>8. Säkerhetsåtgärder</h4>

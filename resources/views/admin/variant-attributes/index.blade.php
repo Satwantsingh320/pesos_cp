@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
-@section('title', 'Variant Attributes')
-@section('header', 'Variant Attributes Management')
+@section('title', __('admin.Variant Attributes'))
+@section('header', __('admin.Variant Attributes Management'))
 
 @section('content')
     <div class="main-content">
@@ -11,9 +11,9 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">All Attributes</h5>
+                <h5 class="mb-0">{{ __('admin.All Attributes')}}</h5>
                 <a href="{{ route('admin.variant-attributes.create') }}" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Add New Attribute
+                    <i class="fas fa-plus"></i> {{ __('admin.Add New Attribute')}}
                 </a>
             </div>
             <div class="card-body">
@@ -22,13 +22,13 @@
                         <thead>
                             <tr>
 
-                                <th>Name</th>
-                                <th>Display Name</th>
-                                <th>Type</th>
-                                <th>Values Count</th>
-                                <th>Status</th>
-                                <th>Created At</th>
-                                <th>Actions</th>
+                                <th>{{ __('admin.Name')}}</th>
+                                <th>{{ __('admin.Display Name')}}</th>
+                                <th>{{ __('admin.Type')}}</th>
+                                <th>{{ __('admin.Values Count')}}</th>
+                                <th>{{ __('admin.Status')}}</th>
+                                <th>{{ __('admin.Created At')}}</th>
+                                <th>{{ __('admin.Actions')}}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -75,7 +75,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="8" class="text-center">No attributes found.</td>
+                                <td colspan="8" class="text-center">{{ __('admin.No attributes found.')}}</td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -100,7 +100,7 @@
 @section('js')
 <script>
 function deleteAttribute(id) {
-    if (confirm('Are you sure you want to delete this attribute? This will also delete all its values.')) {
+    if (confirm(`{{ __("admin.Are you sure you want to delete this attribute? This will also delete all its values.")}}`)) {
         const form = document.getElementById('delete-form');
         form.action = '{{ url("admin/variant-attributes") }}/' + id;
         form.submit();

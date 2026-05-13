@@ -32,7 +32,7 @@
                         </td>
                         <td class="d-none"><img src="{{ $imagePath }}" height="50" width="50" /></td>
                         <td>{{ $row->order_number }} <br>
-                            ${{ number_format($row->price, 2) }}</td>
+                            {{ CURRENCY }}{{ number_format($row->price, 2) }}</td>
                         <td>
                             <b>{!! __('admin.name') !!}</b> : {{ $row->customer?->name }}
                             <br><b>{!! __('admin.email') !!}</b> : {{ $row->customer?->email }}

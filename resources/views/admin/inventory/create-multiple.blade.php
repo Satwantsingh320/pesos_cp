@@ -15,7 +15,7 @@
                                 <h4 class="mb-sm-0 font-size-18">{{ __('admin.inventoryArray.multiple_upload_inventory') }}
                                 </h4>
                             </div>
-                            <div>
+                            <div class="d-none">
                                 <button type="button" class="btn btn-info btn-sm" id="downloadSample">
                                     <i class="bx bx-download"></i> Download Sample CSV
                                 </button>
@@ -233,7 +233,7 @@
                                                         <label
                                                             class="form-label">{{ __('admin.inventoryArray.example_format') }}</label>
                                                         <pre class="bg-light p-2">simple,1,in,10,Restocking
-            variant,5,out,2,Sold to customer</pre>
+                variant,5,out,2,Sold to customer</pre>
                                                     </div>
                                                 </form>
                                             </div>

@@ -11,7 +11,7 @@
                                 <div class="col-7">
                                     <div class="text-primary p-4">
                                         <h5 class="text-primary">
-                                            {{ __('website.welcome_to_admin', ['name' => 'Vaak golvslip']) }}</h5>
+                                            {{ __('website.welcome_to_admin', ['name' => config('app.name')]) }}</h5>
                                     </div>
                                 </div>
                                 <div class="col-5 align-self-end">

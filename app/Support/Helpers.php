@@ -86,7 +86,7 @@ define('CUSTOMER_QR_CODE_PATH', 'customer_qrcodes/');
 define('VENDOR_QR_CODE_PATH', 'vendor_qrcodes/');
 define('WITHDRAW_MONEY', 1);
 define('TRANSFER_MONEY', 2);
-define('CURRENCY', 'MX$');
+define('CURRENCY', 'KR');
 define('SLIDER_BANNERS_PATH', 'uploads/sliders/');
 
 function submissionTypeName($type = 0)

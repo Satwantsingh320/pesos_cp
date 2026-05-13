@@ -6,7 +6,7 @@ class OrderItem extends Model
 
     public function order()
     {
-        return $this->belongsTo(Order::class, 'orders_id');
+        return $this->belongsTo(Order::class, 'order_id');
     }
     public function product()
     {
@@ -58,5 +58,10 @@ class OrderItem extends Model
 
         // negative = expired
         return now()->diffInDays($expiryDate, false);
+    }
+
+    public function variant()
+    {
+        return $this->belongsTo(ProductVariant::class, 'variant_id');
     }
 }

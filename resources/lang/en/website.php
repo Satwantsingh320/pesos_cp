@@ -19,10 +19,10 @@ return [
     'useful_links' => 'Useful Links',
     'terms_and_conditions' => 'Terms and Conditions',
     'privacy_policy' => 'Privacy Policy',
-    'return_policy' => 'Return Policy',
+    'return_policy' => 'Shipping Policy',
     'get_in_touch' => 'Get in Touch',
     'address' => 'Campo 8, Km 29 Corredor Comercial Cuauhtémoc, Chihuahua Cp: 31614',
-    'copyright' => 'Copyright © 2025 Vaak golvslip All rights reserved',
+    'copyright' => 'Copyright © 2025 ' . config('app.name') . ' All rights reserved',
     'categories_menu' => 'Categories',
     'store' => 'Store',
     'my_account' => 'My Account',
@@ -556,7 +556,7 @@ return [
     'enter_password' => 'Enter password',
     'log_in' => 'Log In',
     'by' => 'by',
-    'Return Policy' => 'Return Policy',
+    'Return Policy' => 'Shipping Policy',
     'reset_password_title' => 'Reset Password',
     'reset_password_page_title' => 'Reset Password',
     'reset_password_page_subtitle' => 'Change your password',
@@ -572,7 +572,7 @@ return [
     'admin.design_and_develop_by' => 'Design and Develop by',
     // Register Page
     'register_title' => 'Free Registration',
-    'register_subtitle' => 'Get your free Vaak golvslip account now.',
+    'register_subtitle' => 'Get your free ' . config('app.name') . ' account now.',
     'name_placeholder' => 'Enter your name',
     'password_label' => 'Password',
     'password_placeholder' => 'Enter your password',
@@ -589,5 +589,6 @@ return [
     'image' => 'Image',
     'No new notifications' => 'No new notifications',
     'cart_items_changed' => 'Some cart items have changed due to stock or price updates.',
+
 
 ];

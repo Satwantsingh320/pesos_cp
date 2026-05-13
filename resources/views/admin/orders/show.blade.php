@@ -73,7 +73,7 @@
                     <!-- HEADER -->
                     <div class="d-flex justify-content-between mb-4">
                         <div>
-                            <h3 class="fw-bold mb-1">vaakgolvslip.se</h3>
+                            <h3 class="fw-bold mb-1">{{ config('app.name') }}</h3>
                             <p class="mb-0 text-muted">
                                 Campo 8,<br>
                                 Km 29 Corredor Comercial Cuauhtémoc <br>
@@ -169,17 +169,62 @@
                         </thead>
                         <tbody>
                             @foreach($order->items as $item)
-                                <tr>
-                                    <td>
-                                        {{ $item->name }}<br>
-                                        <small class="text-muted">ID: #{{ $item->product_id }}</small>
-                                    </td>
-                                    <td class="text-center">{{ $item->quantity }}</td>
-                                    <td class="text-end">{{CURRENCY}}{{ number_format($item->price, 2) }}</td>
-                                    <td class="text-end fw-bold">
-                                        {{CURRENCY}}{{ number_format($item->price * $item->quantity, 2) }}
-                                    </td>
-                                </tr>
+                                                        @php
+                                                            // Get variant attributes if exists
+                                                            $variantDisplay = '';
+                                                            if ($item->variant_id && $item->variant) {
+                                                                $attributes = [];
+                                                                if ($item->variant->combinations) {
+                                                                    foreach ($item->variant->combinations as $combo) {
+                                                                        if ($combo->attributeValue) {
+                                                                            $attributes[] = $combo->attributeValue->value;
+                                                                        }
+                                                                    }
+                                                                }
+                                                                $variantDisplay = implode(', ', $attributes);
+                                                            } elseif ($item->variant_attributes) {
+                                                                $variantDisplay = $item->variant_attributes;
+                                                            }
+                                                          @endphp
+                                  <tr>
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-3">
+                                                                    <div class="product-img-cart flex-shrink-0">
+                                                                        @if($variantDisplay && !empty($item->variant->image))
+                                                                            <img src="{{ asset('uploads/products') . '/' . $item->variant->image }}"
+                                                                                class="img-fluid" alt="{{ __('website.product') }}"
+                                                                                style="width: 60px; height: 60px; object-fit: cover;">
+                                                                        @else
+                                                                            <img src="{{ $item->product->cover_image_url }}" class="img-fluid"
+                                                                                alt="{{ __('website.product') }}"
+                                                                                style="width: 60px; height: 60px; object-fit: cover;">
+                                                                        @endif
+                                                                    </div>
+
+                                                                    <div>
+                                                                        <div>{{ $item->name }}</div>
+
+                                                                        @if($variantDisplay)
+                                                                            <small class="text-muted">
+                                                                                <i class="fas fa-tag"></i> {{ $variantDisplay }}
+                                                                            </small>
+                                                                            <br>
+                                                                        @endif
+
+                                                                        @if($item->variant && $item->variant->sku)
+                                                                            <small class="text-muted">
+                                                                                {{ __('website.sku') }}: {{ $item->variant->sku }}
+                                                                            </small>
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="text-center">{{ $item->quantity }}</td>
+                                                            <td class="text-end">{{CURRENCY}}{{ number_format($item->price, 2) }}</td>
+                                                            <td class="text-end fw-bold">
+                                                                {{CURRENCY}}{{ number_format($item->price * $item->quantity, 2) }}
+                                                            </td>
+                                                        </tr>
                             @endforeach
                         </tbody>
                     </table>

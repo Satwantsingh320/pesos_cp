@@ -370,7 +370,7 @@ class InventoryController extends Controller
                     return response()->json([
                         'success' => true,
                         'current_stock' => $totalStock,
-                        'price' => $product->min_price,
+                        'price' => $product->minimum_product_price,
                         'sku' => 'VARIOUS',
                         'has_variants' => true
                     ]);

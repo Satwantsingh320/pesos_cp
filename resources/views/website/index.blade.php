@@ -202,7 +202,7 @@
     </div>
 
     <!-- ========= Clearance Products Section ======= -->
-    <section id="selling-products">
+   {{--  <section id="selling-products">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 wow fadeInLeft">
@@ -230,5 +230,5 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> --}}
 @endsection

@@ -280,6 +280,9 @@ class VipController extends Controller
                     $regularPrice = $price->variant
                         ? ($price->variant->offer_price ?? $price->variant->price)
                         : ($price->product->offer_price ?? $price->product->price);
+                    if (empty($regularPrice) && $price->product->has_variants == 1) {
+                        $regularPrice = $price->product->raw_price;
+                    }
 
                     return [
                         'id' => $price->id,

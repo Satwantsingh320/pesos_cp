@@ -127,10 +127,19 @@
                                                     {{__('admin.total_stock')}}:
                                                     <span id="total-stock">{{$product->variants->sum('quantity')}}</span>
                                                 </h6>
-                                                <h5 class="mb-4">{{__('admin.price_range')}} :
-                                                    <b>{{CURRENCY}}{{number_format($product->min_price ?? 0, 2)}} -
-                                                        {{CURRENCY}}{{number_format($product->max_price ?? 0, 2)}}</b>
-                                                </h5>
+                                                @if($product->minimum_product_price == $product->maximum_product_price)
+                                                    <h5 class="mb-4">{{__('admin.price')}} :
+                                                        <b>
+                                                            {{CURRENCY}}{{number_format($product->maximum_product_price ?? 0, 2)}}
+                                                        </b>
+                                                    </h5>
+                                                @else
+                                                    <h5 class="mb-4">{{__('admin.price_range')}} :
+                                                        <b>{{CURRENCY}}{{number_format($product->minimum_product_price ?? 0, 2)}} -
+                                                            {{CURRENCY}}{{number_format($product->maximum_product_price ?? 0, 2)}}</b>
+                                                    </h5>
+                                                @endif
+
                                             @endif
                                             <div class="details-box">
                                                 <p class="text-muted mb-4">{!! $product->description !!}</p>

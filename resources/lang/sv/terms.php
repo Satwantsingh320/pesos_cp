@@ -12,7 +12,7 @@ return [
         <h4>1. Ägaridentifiering</h4>
         <p>
             <strong>Företagsnamn:</strong> ' . config('app.name') . '<br>
-            <strong>Kontakt e-post:</strong> contacto@vaakgolvslip.se<br>
+            <strong>Kontakt e-post:</strong> ' . __('website.email_address') . '<br>
         </p>
 
         <h4>2. Syfte</h4>
@@ -54,7 +54,7 @@ return [
             Enligt spansk lagstiftning har kunden en period på <strong>14 kalenderdagar</strong> från mottagandet av beställningen att utöva sin ångerrätt utan motivering.
         </p>
         <p>
-            För att utöva denna rätt måste du meddela oss via e-post på contacto@vaakgolvslip.se.
+            För att utöva denna rätt måste du meddela oss via e-post på ' . __('website.email_address') . '.
             Produkten måste returneras i perfekt skick.
         </p>
 

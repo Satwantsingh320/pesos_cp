@@ -684,7 +684,7 @@
                                                             <label for="is_special_offer"
                                                                 class="form-check-label">{{ __('admin.special_offer') }}</label>
                                                         </div>
-                                                        <div class="form-check mb-1">
+                                                        <div class="form-check mb-1 d-none">
                                                             <input class="form-check-input" type="checkbox"
                                                                 name="is_clearance" id="is_clearance" value="1" {{ $product->is_clearance == 1 ? 'checked' : '' }}>
                                                             <label for="is_clearance"
@@ -857,7 +857,7 @@
         // Store attribute values from backend
         @foreach($attributes as $attribute)
             attributeValuesData[{{ $attribute->id }}] = {
-                @foreach($attribute->values as $value)
+                @foreach($attribute->values->sortBy('position') as $value)
                             {{ $value->id }}: {
                         id: {{ $value->id }},
                         value: "{{ $value->value }}",
@@ -952,7 +952,10 @@
                     renderAttributeSelector(attributeId, attributeName);
                 } else {
                     // REMOVE ATTRIBUTE - Delete all variants containing this attribute
-                    if (confirm(`Removing "${attributeName}" will delete all variants that use this attribute. Continue?`)) {
+                 if (confirm(
+    `{{ __("admin.attribute_remove_confirmation", ["attribute" => ":attribute"]) }}`
+        .replace(':attribute', attributeName)
+)) {
                         delete selectedAttributes[attributeId];
                         card.removeClass('active');
                         $(`#attributeSelector_${attributeId}`).remove();
@@ -1001,7 +1004,10 @@
             variantsToRemove.forEach($row => $row.remove());
 
             if (variantsToRemove.length > 0) {
-                toastr.info(`${variantsToRemove.length} variant(s) removed because they contained the removed attribute.`);
+              toastr.info(
+    `{{ __("admin.variants_removed_due_to_attribute", ["count" => ":count"]) }}`
+        .replace(':count', variantsToRemove.length)
+);
             }
 
             // Check if table is empty
@@ -1045,7 +1051,10 @@
             variantsToRemove.forEach($row => $row.remove());
 
             if (variantsToRemove.length > 0) {
-                toastr.info(`${variantsToRemove.length} variant(s) removed due to unselected attribute values.`);
+               toastr.info(
+    `{{ __("admin.variants_removed_due_to_values", ["count" => ":count"]) }}`
+        .replace(':count', variantsToRemove.length)
+);
             }
 
             // Check if table is empty
@@ -1152,7 +1161,7 @@
                             <i class="bx bx-category"></i> ${attributeName}
                         </h6>
                         <button type="button" class="btn btn-sm btn-outline-danger remove-attribute-btn" data-attribute-id="${attributeId}">
-                            <i class="bx bx-trash"></i> Remove
+                        <i class="bx bx-trash"></i> {{ __("admin.remove") }}
                         </button>
                     </div>
                     <div class="value-checkbox-group" id="valuesContainer_${attributeId}">
@@ -1202,7 +1211,7 @@
                     hasValues = true;
                     summaryHtml += `
                         <span class="selected-badge">
-                            ${attr.name}: ${attr.values.length} selected
+                      ${attr.name}: ${attr.values.length} {{ __("admin.selected") }}
                             <span class="remove-badge" data-attribute-id="${attrId}">×</span>
                         </span>
                     `;
@@ -1212,7 +1221,7 @@
             if (summaryHtml) {
                 $('#selectedSummaryContainer').html(`
                     <div class="selected-summary">
-                        <strong><i class="bx bx-check-circle"></i> Selected Attributes:</strong>
+                    <strong><i class="bx bx-check-circle"></i> {{ __("admin.selected_attributes") }}:</strong>
                         <div class="mt-2">${summaryHtml}</div>
                     </div>
                 `);
@@ -1299,16 +1308,20 @@ $('#generateVariantsBtn').on('click', function() {
 
     // If no new values, suggest to add new values first
     if (!hasNewValues) {
-        toastr.info('No new attribute values detected. To add new variants, please select additional attribute values first.');
+       toastr.info('{{ __("admin.no_new_attribute_values_detected") }}');
         return;
     }
 
     // Show which new values will generate variants
-    let newValuesMessage = 'New values detected:\n';
+  let newValuesMessage = `{{ __("admin.new_values_detected") }}\n`;
     newValuesAdded.forEach(item => {
-        newValuesMessage += `\n• ${item.attrName}: ${item.values.length} new value(s)`;
+       newValuesMessage += `\n• ${
+    `{{ __("admin.new_value_count", ["attribute" => ":attribute", "count" => ":count"]) }}`
+        .replace(':attribute', item.attrName)
+        .replace(':count', item.values.length)
+}`;
     });
-    newValuesMessage += '\n\nGenerate variants for these new values only?';
+  newValuesMessage += `\n\n{{ __("admin.generate_variants_for_new_values") }}`;
 
     if (!confirm(newValuesMessage)) {
         return;
@@ -1383,12 +1396,15 @@ $('#generateVariantsBtn').on('click', function() {
     });
 
     if (newCombinationsToAdd.length === 0) {
-        toastr.info('No new variants to add. All combinations with new values already exist!');
+       toastr.info('{{ __("admin.no_new_variants_to_add") }}');
         return;
     }
 
     // Confirm before adding
-    if (!confirm(`Add ${newCombinationsToAdd.length} new variant(s) for the new attribute values? Existing variants will be preserved.`)) {
+   if (!confirm(
+    `{{ __("admin.confirm_add_new_variants", ["count" => ":count"]) }}`
+        .replace(':count', newCombinationsToAdd.length)
+)) {
         return;
     }
 
@@ -1404,7 +1420,9 @@ $('#generateVariantsBtn').on('click', function() {
 
         attributeIds.forEach(attrId => {
             let valueId = combination[attrId];
-            let valueText = attributeValuesData[attrId] ? attributeValuesData[attrId][valueId]?.value : 'Unknown';
+           let valueText = attributeValuesData[attrId]
+    ? attributeValuesData[attrId][valueId]?.value
+    : '{{ __("admin.unknown") }}';
 
             combinationHtml += `<span class="combination-badge">${valueText}</span>`;
             attributesHtml += `<input type="hidden" name="variants[${currentIndex}][attributes][${attrId}]" value="${valueId}">`;
@@ -1448,7 +1466,10 @@ $('#generateVariantsBtn').on('click', function() {
         }
         $('#variantsTableBody').append(html);
         bindVariantEvents();
-        toastr.success(`${newCombinationsToAdd.length} new variant(s) added successfully for the new attribute values!`);
+       toastr.success(
+    `{{ __("admin.new_variants_added_successfully", ["count" => ":count"]) }}`
+        .replace(':count', newCombinationsToAdd.length)
+);
     }
 });
 
@@ -1608,7 +1629,7 @@ $('#generateVariantsBtn').on('click', function() {
                         }
                     },
                     error: function (xhr) {
-                        toastr.error('Error loading subcategories');
+                      toastr.error('{{ __("admin.error_loading_subcategories") }}');
                     }
                 });
             }

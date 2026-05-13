@@ -225,7 +225,7 @@ Route::middleware('auth:customer')->group(function () {
 
 Route::get('/terms', [AuthController::class, 'terms'])->name('terms');
 Route::get('/privacy-policy', [AuthController::class, 'privacyPolicy'])->name('privacyPolicy');
-Route::get('/return-policy', [AuthController::class, 'returnPolicy'])->name('returnPolicy');
+Route::get('/shipping-policy', [AuthController::class, 'returnPolicy'])->name('shippingPolicy');
 Route::prefix('wishlist')->group(function () {
     Route::get('/', [WishlistController::class, 'index'])->name('wishlist.index');
     Route::post('/toggle/{product}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');

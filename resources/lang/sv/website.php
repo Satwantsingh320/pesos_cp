@@ -19,10 +19,10 @@ return [
     'useful_links' => 'Användbara länkar',
     'terms_and_conditions' => 'Villkor',
     'privacy_policy' => 'Integritetspolicy',
-    'return_policy' => 'Returpolicy',
+    'return_policy' => 'Fraktpolicy',
     'get_in_touch' => 'Kontakta oss',
     'address' => 'Campo 8, Km 29 Corredor Comercial Cuauhtémoc, Chihuahua Cp: 31614',
-    'copyright' => 'Copyright © 2025 Vaak golvslip Alla rättigheter förbehållna',
+    'copyright' => 'Copyright © 2025 ' . config('app.name') . ' Alla rättigheter förbehållna',
     'categories_menu' => 'Kategorier',
     'store' => 'Butik',
     'my_account' => 'Mitt konto',
@@ -437,7 +437,7 @@ return [
         <h4>1. Personuppgiftsansvarig</h4>
         <p>
             <strong>Företagsnamn:</strong> ' . config('app.name') . '<br>
-            <strong>E-post:</strong> contacto@vaakgolvslip.se<br>
+            <strong>E-post:</strong> ' . __('website.email_address') . '<br>
         </p>
 
         <h4>2. Uppgifter vi samlar in</h4>
@@ -492,7 +492,7 @@ return [
         </ul>
 
         <p>
-            Du kan utöva dina rättigheter genom att skicka en begäran till contacto@vaakgolvslip.se, med en kopia av ditt identitetsdokument.
+            Du kan utöva dina rättigheter genom att skicka en begäran till ' . __('website.email_address') . ', med en kopia av ditt identitetsdokument.
         </p>
 
         <h4>8. Säkerhetsåtgärder</h4>
@@ -640,7 +640,7 @@ return [
     'enter_password' => 'Ange lösenord',
     'log_in' => 'Logga in',
     'by' => 'av',
-    'Return Policy' => 'Returpolicy',
+    'Return Policy' => 'Fraktpolicy',
     'reset_password_title' => 'Återställ lösenord',
     'reset_password_page_title' => 'Återställ lösenord',
     'reset_password_page_subtitle' => 'Ändra ditt lösenord',
@@ -656,7 +656,7 @@ return [
     'admin.design_and_develop_by' => 'Design och utveckling av',
     // Register Page
     'register_title' => 'Gratis Registrering',
-    'register_subtitle' => 'Skaffa ditt gratis Vaak golvslip konto nu.',
+    'register_subtitle' => 'Skaffa ditt gratis ' . config('app.name') . ' konto nu.',
     'name_placeholder' => 'Ange ditt namn',
     'password_label' => 'Lösenord',
     'password_placeholder' => 'Ange ditt lösenord',

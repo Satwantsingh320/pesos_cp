@@ -109,7 +109,7 @@
                                             {{ __('website.of') }}
                                             <a href="{{ route('privacyPolicy') }}"
                                                 class="text-primary">{{ __('website.privacy_policy') }}</a>
-                                            {{ __('website.of') }} Vaak golvslip
+                                            {{ __('website.of') }} {{ config('app.name') }}
                                         </p>
                                         <p>{{ __('website.already_have_account') }} <a href="{{ route('login') }}"
                                                 class="fw-medium text-primary">

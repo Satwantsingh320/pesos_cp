@@ -12,7 +12,7 @@ return [
         <h4>1. Owner Identification</h4>
         <p>
             <strong>Business Name:</strong> ' . config('app.name') . '<br>
-            <strong>Contact Email:</strong> contacto@vaakgolvslip.se<br>
+            <strong>Contact Email:</strong> ' . __('website.email_address') . '<br>
         </p>
 
         <h4>2. Purpose</h4>
@@ -54,7 +54,7 @@ return [
             In accordance with Spanish legislation, the customer has a period of <strong>14 calendar days</strong> from receipt of the order to exercise their right of withdrawal without justification.
         </p>
         <p>
-            To exercise this right, you must notify us by email at contacto@vaakgolvslip.se.
+            To exercise this right, you must notify us by email at ' . __('website.email_address') . '.
             The product must be returned in perfect condition.
         </p>
 

@@ -12,7 +12,7 @@ return [
         <h4>1. Data Controller</h4>
         <p>
             <strong>Business Name:</strong> ' . config('app.name') . '<br>
-            <strong>Email:</strong> contacto@vaakgolvslip.se<br>
+            <strong>Email:</strong> ' . __('website.email_address') . '<br>
         </p>
 
         <h4>2. Data We Collect</h4>
@@ -67,7 +67,7 @@ return [
         </ul>
 
         <p>
-            You may exercise your rights by sending a request to contacto@vaakgolvslip.se, attaching a copy of your identification document.
+            You may exercise your rights by sending a request to ' . __('website.email_address') . ', attaching a copy of your identification document.
         </p>
 
         <h4>8. Security Measures</h4>

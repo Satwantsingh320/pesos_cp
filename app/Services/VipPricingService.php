@@ -61,19 +61,25 @@ class VipPricingService
      */
     public function getManualPrice($customerId, $productId, $variantId = null)
     {
-
-        $query = VipProductPrice::where('customer_id', $customerId)
-            ->where('product_id', $productId);
-
+        // First try to get variant-specific price
         if ($variantId) {
-            $query->where('product_variant_id', $variantId);
-        } else {
-            $query->whereNull('product_variant_id');
+            $variantPrice = VipProductPrice::where('customer_id', $customerId)
+                ->where('product_id', $productId)
+                ->where('product_variant_id', $variantId)
+                ->first();
+
+            if ($variantPrice && $variantPrice->vip_price > 0) {
+                return (float) $variantPrice->vip_price;
+            }
         }
 
-        $price = $query->first();
+        // Fallback to default product price (where variant_id is null)
+        $defaultPrice = VipProductPrice::where('customer_id', $customerId)
+            ->where('product_id', $productId)
+            ->whereNull('product_variant_id')
+            ->first();
 
-        return $price && $price->vip_price > 0 ? (float) $price->vip_price : null;
+        return $defaultPrice && $defaultPrice->vip_price > 0 ? (float) $defaultPrice->vip_price : null;
     }
 
     /**

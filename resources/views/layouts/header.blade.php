@@ -19,7 +19,7 @@
                     <span class="logo-lg">
                         <img src="{{asset('assets/images/logo.png')}}" alt="">
                     </span>
-                    <!-- <h4 class="text-white">vaakgolvslip.se</h4> -->
+                    <!-- <h4 class="text-white">{{ config('app.name') }}</h4> -->
 
                 </a>
             </div>

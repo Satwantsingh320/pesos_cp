@@ -360,7 +360,7 @@ section#selling-products {
 footer#footer {
     margin-top: 50px;
     background-color: var(--main-color-bg);
-    padding: 40px 0;
+    padding: 0px 0;
     padding-bottom: 0;
 }
 
@@ -1489,4 +1489,32 @@ body.modal-open {
     transform: translateY(-50%);
     background: none;
     border: none;
+}
+.carousel-item {
+    position: relative;
+}
+
+.carousel-item img {
+    height: 800px;
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Add dark overlay for better text readability */
+.carousel-item::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    pointer-events: none; /* Allows clicking through overlay */
+}
+
+/* Caption styling for better visibility */
+.carousel-caption {
+    z-index: 2;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }

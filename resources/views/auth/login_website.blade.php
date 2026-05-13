@@ -16,7 +16,8 @@
                             <div class="row">
                                 <div class="col-7">
                                     <div class="text-primary p-4">
-                                        <h5 class="text-primary">{{ __('website.welcome_to', ['name' => 'Vaak golvslip']) }}
+                                        <h5 class="text-primary">
+                                            {{ __('website.welcome_to', ['name' => config('app.name')]) }}
                                         </h5>
                                     </div>
                                 </div>

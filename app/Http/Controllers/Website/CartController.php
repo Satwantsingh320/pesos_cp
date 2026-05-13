@@ -202,12 +202,12 @@ class CartController extends Controller
         return response()->json([
             'success' => true,
             'message' => __('admin.Cart updated'),
-            'item_total' => '{{CURRENCY}} ' . number_format($item->total, 2),
-            'subtotal' => '{{CURRENCY}} ' . number_format($cart->subtotal, 2),
-            'discount' => '{{CURRENCY}} ' . number_format($cart->discount_amount ?? 0, 2),
-            'tax' => '{{CURRENCY}} ' . number_format($cart->tax_amount, 2),
-            'shipping' => '{{CURRENCY}} ' . number_format($cart->shipping_amount, 2),
-            'grand_total' => '{{CURRENCY}} ' . number_format($grandTotal, 2),
+            'item_total' => CURRENCY . number_format($item->total, 2),
+            'subtotal' => CURRENCY . number_format($cart->subtotal, 2),
+            'discount' => CURRENCY . number_format($cart->discount_amount ?? 0, 2),
+            'tax' => CURRENCY . number_format($cart->tax_amount, 2),
+            'shipping' => CURRENCY . number_format($cart->shipping_amount, 2),
+            'grand_total' => CURRENCY . number_format($grandTotal, 2),
             'cart_count' => $cartCount,
             'item_quantity' => $item->quantity,
             'max_stock' => $maxStock
@@ -341,18 +341,19 @@ class CartController extends Controller
         }
 
         // 2. Add Tax as a Line Item
-        if ($tax > 0) {
-            $lineItems[] = [
-                'price_data' => [
-                    'currency' => 'mxn',
-                    'unit_amount' => $tax * 100,
-                    'product_data' => [
-                        'name' => 'Tax',
-                    ],
-                ],
-                'quantity' => 1,
-            ];
-        }
+        //comment this if included tax
+        /*   if ($tax > 0) {
+              $lineItems[] = [
+                  'price_data' => [
+                      'currency' => 'mxn',
+                      'unit_amount' => $tax * 100,
+                      'product_data' => [
+                          'name' => 'Tax',
+                      ],
+                  ],
+                  'quantity' => 1,
+              ];
+          } */
 
         // 3. Handle Discounts
         $discounts = [];
@@ -453,12 +454,14 @@ class CartController extends Controller
             $cart = app(CartService::class)->getCart();
             foreach ($cart->items as $item) {
                 $orderItem = new OrderItem;
-                $orderItem->orders_id = $order->id;
+                $orderItem->order_id = $order->id;
                 $orderItem->product_id = $item->product_id;
                 $orderItem->name = $item->product?->name ?? '';
                 $orderItem->quantity = $item->quantity;
                 $orderItem->price = $item->price_at_time;
                 $orderItem->shipping_fee = $item->shipping_fee_at_time;
+                $orderItem->variant_id = $item->variant_id;
+                $orderItem->variant_attributes = $item->variant_attributes;
                 $orderItem->save();
             }
             app(CartService::class)->clear();

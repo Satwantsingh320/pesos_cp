@@ -446,7 +446,7 @@
                                                     <input class="form-check-input" id="is_special_offer" type="checkbox" name="is_special_offer" value="1" {{ old('is_special_offer') ? 'checked' : '' }}>
                                                     <label for="is_special_offer" class="form-check-label">{{ __('admin.special_offer') }}</label>
                                                 </div>
-                                                <div class="form-check mb-1">
+                                                <div class="form-check mb-1 d-none">
                                                     <input class="form-check-input" type="checkbox" name="is_clearance" id="is_clearance" value="1" {{ old('is_clearance') ? 'checked' : '' }}>
                                                     <label for="is_clearance" class="form-check-label">{{ __('admin.clearance_item') }}</label>
                                                 </div>
@@ -645,7 +645,9 @@
             // For now, let's assume you have the data in a global variable
             @foreach($attributes as $attribute)
                 if ({{ $attribute->id }} == attributeId) {
-                    const values = @json($attribute->values);
+                      const values = @json(
+            $attribute->values->sortBy('position')->values()
+        );
                     values.forEach(value => {
                         if (value.color_code) {
                             valuesHtml += `
@@ -682,7 +684,7 @@
                             <i class="bx bx-category"></i> ${attributeName}
                         </h6>
                         <button type="button" class="btn btn-sm btn-outline-danger remove-attribute-btn" data-attribute-id="${attributeId}">
-                            <i class="bx bx-trash"></i> Remove
+                        <i class="bx bx-trash"></i> {{ __("admin.remove") }}
                         </button>
                     </div>
                     <div class="value-checkbox-group" id="valuesContainer_${attributeId}">
@@ -731,7 +733,7 @@
                     hasValues = true;
                     summaryHtml += `
                         <span class="selected-badge">
-                            ${attr.name}: ${attr.values.length} selected
+                       ${attr.name}: ${attr.values.length} {{ __("admin.selected") }}
                             <span class="remove-badge" data-attribute-id="${attrId}">×</span>
                         </span>
                     `;
@@ -741,7 +743,7 @@
             if (summaryHtml) {
                 $('#selectedSummaryContainer').html(`
                     <div class="selected-summary">
-                        <strong><i class="bx bx-check-circle"></i> Selected Attributes:</strong>
+                      <strong><i class="bx bx-check-circle"></i> {{ __("admin.selected_attributes") }}:</strong>
                         <div class="mt-2">${summaryHtml}</div>
                     </div>
                 `);
@@ -845,12 +847,15 @@
             let combinations = generateCombinations(attributesForCombination);
 
             if (combinations.length === 0) {
-                toastr.warning('No combinations generated');
+           toastr.warning('{{ __("admin.no_combinations_generated") }}');
                 return;
             }
 
             if (combinations.length > 100) {
-                if (!confirm(`You are about to generate ${combinations.length} variants. This may take a moment. Continue?`)) {
+            if (!confirm(
+    `{{ __("admin.generate_variants_confirmation", ["count" => ":count"]) }}`
+        .replace(':count', combinations.length)
+)) {
                     return;
                 }
             }
@@ -976,7 +981,7 @@
                         }
                     },
                     error: function(xhr) {
-                        toastr.error('Error loading subcategories');
+                      toastr.error('{{ __("admin.error_loading_subcategories") }}');
                     }
                 });
             }

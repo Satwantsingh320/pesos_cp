@@ -58,7 +58,7 @@
                     <div class="card-body text-center">
                         <img src="{{ asset('uploads/customers/' . $customer->image ?? 'assets/images/default-user.png') }}"
                             onerror="this.onerror=null;this.src='{{ asset('assets/images/default-user.png') }}';"
-                            class="rounded-circle mb-3" width="100" alt="{{ __('website.profile_image') }}">
+                            class=" mb-3" width="100" alt="{{ __('website.profile_image') }}">
                         <h5>{{ $customer->name }}</h5>
                         <p class="text-muted small">{{ $customer->email }}</p>
                     </div>

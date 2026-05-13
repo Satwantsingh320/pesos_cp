@@ -7,6 +7,12 @@
 @extends('website.layouts.layouts')
 
 @section('content')
+    <style>
+        .product-img-cart {
+            width: 60px;
+            margin: 0 10px;
+        }
+    </style>
     <div class="container my-5">
         <!-- start page title -->
         <div class="row">
@@ -29,10 +35,10 @@
                 <div class="col-md-6 text-md-end">
                     @php
                         $statusBadge = [
-                            0 => ['class' => 'bg-secondary', 'label' => __('status_pending')],
-                            1 => ['class' => 'bg-warning text-dark', 'label' => __('status_ordered')],
-                            2 => ['class' => 'bg-primary', 'label' => __('status_shipped')],
-                            3 => ['class' => 'bg-success', 'label' => __('status_delivered')],
+                            0 => ['class' => 'bg-secondary', 'label' => __('website.status_pending')],
+                            1 => ['class' => 'bg-warning text-dark', 'label' => __('website.status_ordered')],
+                            2 => ['class' => 'bg-primary', 'label' => __('website.status_shipped')],
+                            3 => ['class' => 'bg-success', 'label' => __('website.status_delivered')],
                         ];
                         $currentStatus = $statusBadge[$order->order_status] ?? $statusBadge[0];
                       @endphp
@@ -66,29 +72,68 @@
                                     </thead>
                                     <tbody>
                                         @foreach ($order->items as $item)
+                                            @php
+                                                // Get variant attributes if exists
+                                                $variantDisplay = '';
+                                                if ($item->variant_id && $item->variant) {
+                                                    $attributes = [];
+                                                    if ($item->variant->combinations) {
+                                                        foreach ($item->variant->combinations as $combo) {
+                                                            if ($combo->attributeValue) {
+                                                                $attributes[] = $combo->attributeValue->value;
+                                                            }
+                                                        }
+                                                    }
+                                                    $variantDisplay = implode(', ', $attributes);
+                                                } elseif ($item->variant_attributes) {
+                                                    $variantDisplay = $item->variant_attributes;
+                                                }
+                                              @endphp
                                             <tr>
-                                                <td class="ps-4">
-                                                    <div class="d-flex align-items-center">
-                                                        <div>
+                                                <td class="ps-1">
+                                                    <div class="d-flex align-items-center gap-3">
+                                                        <div class="product-img-cart flex-shrink-0">
+                                                            @if($variantDisplay && !empty($item->variant->image))
+                                                                <img src="{{ asset('uploads/products') . '/' . $item->variant->image }}"
+                                                                    class="img-fluid" alt="{{ __('website.product') }}"
+                                                                    style="width: 60px; height: 60px; object-fit: cover;">
+                                                            @else
+                                                                <img src="{{ $item->product->cover_image_url }}" class="img-fluid"
+                                                                    alt="{{ __('website.product') }}"
+                                                                    style="width: 60px; height: 60px; object-fit: cover;">
+                                                            @endif
+                                                        </div>
+
+                                                        <div class="flex-grow-1">
+                                                            <h6 class="mb-1">{{ $item->name }}</h6>
+
+                                                            @if($variantDisplay)
+                                                                <small class="text-muted d-block">
+                                                                    <i class="fas fa-tag"></i> {{ $variantDisplay }}
+                                                                </small>
+                                                            @endif
+
+                                                            @if($item->variant && $item->variant->sku)
+                                                                <small class="text-muted d-block">
+                                                                    {{ __('website.sku') }}: {{ $item->variant->sku }}
+                                                                </small>
+                                                            @endif
+
                                                             @php
                                                                 $daysLeft = $item->refundDaysLeft();
-                                                              @endphp
-                                                            <h6 class="mb-0">{{ $item->name }}</h6>
-                                                            <small class="text-muted d-none">ID:
-                                                                #{{ $item->product_id }}</small>
-                                                            <small class="text-muted">
-                                                                @if (!is_null($daysLeft))
-                                                                    @if ($daysLeft > 0)
-                                                                        <div class="small text-success">
-                                                                            {{ __('website.days_left_for_refund', ['days' => $daysLeft]) }}
-                                                                        </div>
-                                                                    @elseif($daysLeft === 0)
-                                                                        <div class="small text-warning">
-                                                                            {{ __('website.last_day_for_refund') }}
-                                                                        </div>
-                                                                    @endif
+                                                            @endphp
+
+                                                            @if (!is_null($daysLeft))
+                                                                @if ($daysLeft > 0)
+                                                                    <small class="text-success d-block">
+                                                                        {{ __('website.days_left_for_refund', ['days' => $daysLeft]) }}
+                                                                    </small>
+                                                                @elseif($daysLeft === 0)
+                                                                    <small class="text-warning d-block">
+                                                                        {{ __('website.last_day_for_refund') }}
+                                                                    </small>
                                                                 @endif
-                                                            </small>
+                                                            @endif
                                                         </div>
                                                     </div>
                                                 </td>

@@ -298,6 +298,9 @@
                                                             $regularPrice = $price->variant
                                                                 ? ($price->variant->offer_price ?? $price->variant->price)
                                                                 : ($price->product->offer_price ?? $price->product->price);
+                                                            if (empty($regularPrice) && $price->product->has_variants == 1) {
+                                                                $regularPrice = $price->product->raw_price;
+                                                            }
                                                             $savings = $regularPrice - $price->vip_price;
                                                         @endphp
                                                         <tr>
@@ -700,30 +703,30 @@
                         var currencySymbol = '{{ env("CURRENCY_SYMBOL", "$") }}';
 
                         html += `
-                                                        <div class="list-group-item">
-                                                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                                                <strong>${price.product_name}</strong>
-                                                                ${price.variant_sku ? `<small class="text-muted">SKU: ${price.variant_sku}</small>` : ''}
-                                                            </div>
+                                                                        <div class="list-group-item">
+                                                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                                                <strong>${price.product_name}</strong>
+                                                                                ${price.variant_sku ? `<small class="text-muted">SKU: ${price.variant_sku}</small>` : ''}
+                                                                            </div>
 
-                                                            <div class="row mt-2">
-                                                                <div class="col-md-6">
-                                                                    <div class="text-muted small">{{ __('admin.regular_price') }}:</div>
-                                                                    <div class="text-decoration-line-through">${currencySymbol}${regularPrice.toFixed(2)}</div>
-                                                                </div>
-                                                                <div class="col-md-6">
-                                                                    <div class="text-muted small">{{ __('admin.vip_price') }}:</div>
-                                                                    <div class="text-success fw-bold">${currencySymbol}${vipPrice.toFixed(2)}</div>
-                                                                </div>
-                                                            </div>
+                                                                            <div class="row mt-2">
+                                                                                <div class="col-md-6">
+                                                                                    <div class="text-muted small">{{ __('admin.regular_price') }}:</div>
+                                                                                    <div class="text-decoration-line-through">${currencySymbol}${regularPrice.toFixed(2)}</div>
+                                                                                </div>
+                                                                                <div class="col-md-6">
+                                                                                    <div class="text-muted small">{{ __('admin.vip_price') }}:</div>
+                                                                                    <div class="text-success fw-bold">${currencySymbol}${vipPrice.toFixed(2)}</div>
+                                                                                </div>
+                                                                            </div>
 
-                                                            <div class="mt-2">
-                                                                <span class="badge bg-success">
-                                                                    {{ __('admin.savings') }}: ${currencySymbol}${savings.toFixed(2)} (${savingsPercentage}% {{ __('admin.off') }})
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                    `;
+                                                                            <div class="mt-2">
+                                                                                <span class="badge bg-success">
+                                                                                    {{ __('admin.savings') }}: ${currencySymbol}${savings.toFixed(2)} (${savingsPercentage}% {{ __('admin.off') }})
+                                                                                </span>
+                                                                            </div>
+                                                                        </div>
+                                                                    `;
                     });
                 } else {
                     html += '<div class="list-group-item text-muted">No products found</div>';

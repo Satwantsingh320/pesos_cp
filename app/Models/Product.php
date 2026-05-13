@@ -343,7 +343,7 @@ class Product extends Model
         }
 
         if ($hasPrice) {
-            return $hasPrice->vip_price;
+            return $hasPrice->vip_price > 0 ? $hasPrice->vip_price : $originalPrice;
         }
 
 
@@ -422,7 +422,7 @@ class Product extends Model
 
     public function variants()
     {
-        return $this->hasMany(ProductVariant::class, 'product_id')->orderBy('position');
+        return $this->hasMany(ProductVariant::class, 'product_id')->orderBy('position', 'asc');
     }
 
     public function activeVariants()
@@ -464,7 +464,7 @@ class Product extends Model
         return $this->low_stock_threshold ?? 0;
     }
 
-    public function getMinPriceAttribute()
+    public function getMinimumProductPriceAttribute()
     {
         $price = null;
 
@@ -481,7 +481,7 @@ class Product extends Model
         return $price;
     }
 
-    public function getMaxPriceAttribute()
+    public function getMaximumProductPriceAttribute()
     {
         $price = null;
 
@@ -562,5 +562,10 @@ class Product extends Model
     {
         $minOriginal = min($variantPrices);
         return ($minOriginal != $currentMinPrice) ? $minOriginal : null;
+    }
+
+    public function getRawPriceAttribute()
+    {
+        return $this->max_price;
     }
 }

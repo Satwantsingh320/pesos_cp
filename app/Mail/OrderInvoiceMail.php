@@ -14,7 +14,7 @@ class OrderInvoiceMail extends Mailable
     public $order;
     public $isAdmin;
 
-    public function __construct(Orders $order, $isAdmin = false)
+    public function __construct(Order $order, $isAdmin = false)
     {
         $this->order = $order;
         $this->isAdmin = $isAdmin;
