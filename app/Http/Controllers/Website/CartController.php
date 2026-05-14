@@ -316,7 +316,7 @@ class CartController extends Controller
         foreach ($cart->items as $item) {
             $lineItems[] = [
                 'price_data' => [
-                    'currency' => 'mxn',
+                    'currency' => 'SEK',
                     'unit_amount' => $item->price_at_time * 100, // Stripe uses cents ($10.00 = 1000)
                     'product_data' => [
                         'name' => $item->product?->name,
@@ -330,7 +330,7 @@ class CartController extends Controller
         if ($shippingFee > 0) {
             $lineItems[] = [
                 'price_data' => [
-                    'currency' => 'mxn',
+                    'currency' => 'SEK',
                     'unit_amount' => $shippingFee * 100,
                     'product_data' => [
                         'name' => 'Shipping Fee',
@@ -345,7 +345,7 @@ class CartController extends Controller
         /*   if ($tax > 0) {
               $lineItems[] = [
                   'price_data' => [
-                      'currency' => 'mxn',
+                      'currency' => 'SEK',
                       'unit_amount' => $tax * 100,
                       'product_data' => [
                           'name' => 'Tax',
@@ -363,7 +363,7 @@ class CartController extends Controller
             // 2. Create a temporary coupon in Stripe based on your database calculation
             $stripeCoupon = $stripe->coupons->create([
                 'amount_off' => $discount * 100, // Convert your DB discount to cents
-                'currency' => 'mxn',           // Match your currency
+                'currency' => 'SEK',           // Match your currency
                 'duration' => 'once',          // Only valid for this session
                 'name' => 'Coupon: ' . ($couponId ?? 'Discount'), // Shows up in Stripe UI
             ]);

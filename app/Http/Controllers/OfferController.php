@@ -104,7 +104,7 @@ class OfferController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Offer $offer)
+    public function update(Request $request, $id)
     {
         $rules = [
             'title' => 'required|string',
@@ -117,6 +117,7 @@ class OfferController extends Controller
 
         try {
             DB::beginTransaction();
+            $offer = Offer::find($id);
             $offer->title = $request->title;
             $offer->description = $request->description;
             $offer->status = $request->status;
@@ -148,11 +149,11 @@ class OfferController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Offer $offer)
+    public function destroy($id)
     {
         try {
             DB::beginTransaction();
-
+            $offer = Offer::find($id);
             /*  Delete cover image */
             if ($offer->banner) {
                 $coverPath = public_path(OFFER_BANNERS_PATH . $offer->banner);
@@ -169,7 +170,7 @@ class OfferController extends Controller
                 'success' => true,
                 'status' => 201,
                 'message' => __('admin.offer_deleted_successfully'),
-                'extra' => ['redirect' => route('offers.index')]
+                'extra' => ['redirect' => route('banners.index')]
             ]);
 
         } catch (\Exception $e) {

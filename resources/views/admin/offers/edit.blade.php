@@ -15,7 +15,7 @@
                 <div class="row">
                     <div class="col-4">
                         <div class="page-title-box d-flex align-items-center">
-                            <a href="{{ route('offers.index') }}" class="btn btn-dark btn-sm mx-2"><i
+                            <a href="{{ route('banners.index') }}" class="btn btn-dark btn-sm mx-2"><i
                                     class="bx bx-arrow-back"></i> {{__('admin.back')}}</a>
                             <h4 class="mb-sm-0 font-size-18">{{__('admin.update_banner_details')}}</h4>
                         </div>
