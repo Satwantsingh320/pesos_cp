@@ -2,7 +2,7 @@
 
 return [
     'best_special_offers' => 'Best special offers! 40% discount!',
-    'phone_number' => '+46 614 215 9366',
+    'phone_number' => '+46 736513904',
     'email_address' => 'contacto@vaakgolvslip.se',
     'home' => 'Home',
     'shop' => 'Shop',
@@ -21,7 +21,7 @@ return [
     'privacy_policy' => 'Privacy Policy',
     'return_policy' => 'Shipping Policy',
     'get_in_touch' => 'Get in Touch',
-    'address' => 'Campo 8, Km 29 Corredor Comercial Cuauhtémoc, Chihuahua Cp: 31614',
+    'address' => 'N/A',
     'copyright' => 'Copyright © 2025 ' . config('app.name') . ' All rights reserved',
     'categories_menu' => 'Categories',
     'store' => 'Store',
@@ -333,7 +333,7 @@ return [
     // Features Section
     'free_shipping_desc' => 'For all orders over $1299.00',
     'support_24_7' => '24/7 Support',
-    'support_24_7_desc' => '+46 614 215 9366',
+    'support_24_7_desc' => '+46 736513904',
     'secure_payment_desc' => '100% Secure Payment',
     'daily_offers' => 'Daily Offers',
     'daily_offers_desc' => 'Save up to 25% off',

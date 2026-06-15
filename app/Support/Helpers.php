@@ -1441,7 +1441,7 @@ function sendMailBkp($view, $subject, $to, $data = [], $lang = 'en', $attachment
     $response = false;
     // return view($view, compact('data'))->render();
     try {
-        if (!in_array($lang, ['en', 'ar'])) {
+        if (!in_array($lang, ['en', 'sv'])) {
             $lang = 'en';
         }
 
@@ -1503,7 +1503,7 @@ function sendMail($view, $subject, $to = '', $data = [], $lang = 'en', $attachme
             }
 
             // lang code start
-            if (!in_array($lang, ['en', 'ar'])) {
+            if (!in_array($lang, ['en', 'sv'])) {
                 $lang = 'en';
             }
             app()->setLocale($lang);
@@ -1920,7 +1920,7 @@ function getDataTableLang()
     $lang = app()->getLocale();
     $lang_array = [
         'en' => asset('datatable_en.json'),
-        'ar' => asset('datatable_ar.json'),
+        'sv' => asset('datatable_ar.json'),
     ];
     return $lang_array[$lang];
 }
@@ -1928,25 +1928,25 @@ function getDataTableLang()
 function getLangDir()
 {
     $lang = app()->getLocale();
-    return ($lang == 'ar') ? 'rtl' : 'ltr';
+    return ($lang == 'sv') ? 'rtl' : 'ltr';
 }
 
 function getLang()
 {
     $lang = app()->getLocale();
-    return ($lang == 'ar') ? 'ar' : 'en';
+    return ($lang == 'sv') ? 'sv' : 'en';
 }
 
 function isArabic()
 {
     $lang = app()->getLocale();
-    return ($lang == 'ar') ? true : false;
+    return ($lang == 'sv') ? true : false;
 }
 
 function getLangSymbol()
 {
     $lang = app()->getLocale();
-    return ($lang == 'ar') ? '&nbsp;&nbsp; ع &nbsp;&nbsp;' : 'ENG';
+    return ($lang == 'sv') ? '&nbsp;&nbsp; ع &nbsp;&nbsp;' : 'ENG';
 }
 
 function getSubscriptionInfoBkp()

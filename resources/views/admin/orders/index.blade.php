@@ -13,11 +13,11 @@
                     <div class="col-8">
                         <div class="d-flex justify-content-end flex-wrap gap-2">
                             <!-- <a href="{{ route('category.create') }}" class="btn btn-primary btn-sm">
-                                                                <i class="bx bx-plus"></i> {{ __('admin.create_order') }}
-                                                            </a> -->
+                                                                        <i class="bx bx-plus"></i> {{ __('admin.create_order') }}
+                                                                    </a> -->
                             <!-- <a href="{{ route('export',['page' => 'category']) }}" class="btn btn-success btn-sm">
-                                                                <i class="bx bx-download"></i> {{ __('admin.export_category') }}
-                                                            </a> -->
+                                                                        <i class="bx bx-download"></i> {{ __('admin.export_category') }}
+                                                                    </a> -->
                         </div>
                     </div>
                 </div>
@@ -130,7 +130,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                            aria-label="Close">Close</button>
                         <button type="submit" class="btn btn-primary" id="saveTrackingBtn">Save Changes</button>
                     </div>
                 </form>
@@ -206,6 +207,10 @@
                     }
                 });
             });
+        });
+        $('#trackingModal').on('hidden.bs.modal', function () {
+            $('body').removeClass('modal-open');
+            $('.modal-backdrop').remove();
         });
     </script>
 @endsection

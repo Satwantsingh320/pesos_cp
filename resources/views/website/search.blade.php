@@ -1,6 +1,6 @@
 @php
     $pageType = 'inner';
-    $pageTitle = __('webiste.search_title');
+    $pageTitle = __('website.search_title');
     $breadcrumbTitlecurrent = __('website.search_title');
 @endphp
 

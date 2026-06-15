@@ -80,7 +80,7 @@
             </div>
             <div class="product-details">
                 <div class="product-title">
-                    {{ $product->name }} -{{ $lowStockThreshold }}
+                    {{ $product->name }}
                 </div>
 
                 {{-- Price Display --}}

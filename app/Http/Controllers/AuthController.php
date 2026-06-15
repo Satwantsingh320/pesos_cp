@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Validation\Rule;
 
 class AuthController extends Controller
 {
@@ -113,7 +114,13 @@ class AuthController extends Controller
         // 1. Validate the incoming request
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:customers,email', // Check uniqueness in customers table
+            // 'email' => 'required|email|unique:customers,email', // Check uniqueness in customers table
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('customers', 'email')
+                    ->whereNull('deleted_at'),
+            ],
             'dial_code_iso' => 'required|string|max:5',
             'dial_code' => 'required|string|max:10',
             'phone' => 'required|string|max:20|unique:customers,phone',

@@ -2,7 +2,7 @@
 
 return [
     'best_special_offers' => 'Bästa specialerbjudanden! 40% rabatt!',
-    'phone_number' => '+46 614 215 9366',
+    'phone_number' => '+46 736513904',
     'email_address' => 'contacto@vaakgolvslip.se',
     'home' => 'Hem',
     'shop' => 'Butik',
@@ -21,7 +21,7 @@ return [
     'privacy_policy' => 'Integritetspolicy',
     'return_policy' => 'Fraktpolicy',
     'get_in_touch' => 'Kontakta oss',
-    'address' => 'Campo 8, Km 29 Corredor Comercial Cuauhtémoc, Chihuahua Cp: 31614',
+    'address' => 'N/A',
     'copyright' => 'Copyright © 2025 ' . config('app.name') . ' Alla rättigheter förbehållna',
     'categories_menu' => 'Kategorier',
     'store' => 'Butik',
@@ -331,7 +331,7 @@ return [
     // Features Section
     'free_shipping_desc' => 'För alla beställningar över 1299,00 kr',
     'support_24_7' => '24/7 Support',
-    'support_24_7_desc' => '+46 614 215 9366',
+    'support_24_7_desc' => '+46 736513904',
     'secure_payment_desc' => '100% Säker betalning',
     'daily_offers' => 'Dagliga Erbjudanden',
     'daily_offers_desc' => 'Spara upp till 25% rabatt',
@@ -437,7 +437,7 @@ return [
         <h4>1. Personuppgiftsansvarig</h4>
         <p>
             <strong>Företagsnamn:</strong> ' . config('app.name') . '<br>
-            <strong>E-post:</strong> ' . __('website.email_address') . '<br>
+            <strong>E-post:</strong> ' . __('admin.email_address') . '<br>
         </p>
 
         <h4>2. Uppgifter vi samlar in</h4>
@@ -492,7 +492,7 @@ return [
         </ul>
 
         <p>
-            Du kan utöva dina rättigheter genom att skicka en begäran till ' . __('website.email_address') . ', med en kopia av ditt identitetsdokument.
+            Du kan utöva dina rättigheter genom att skicka en begäran till ' . __('admin.email_address') . ', med en kopia av ditt identitetsdokument.
         </p>
 
         <h4>8. Säkerhetsåtgärder</h4>

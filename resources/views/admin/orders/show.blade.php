@@ -75,10 +75,8 @@
                         <div>
                             <h3 class="fw-bold mb-1">{{ config('app.name') }}</h3>
                             <p class="mb-0 text-muted">
-                                Campo 8,<br>
-                                Km 29 Corredor Comercial Cuauhtémoc <br>
-                                Chihuahua Cp: 31614<br>
-                                +46 614 215 9366
+                                N/A<br>
+                                +46 736513904
                             </p>
                         </div>
 

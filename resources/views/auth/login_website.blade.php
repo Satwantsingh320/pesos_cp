@@ -29,7 +29,7 @@
                                     @csrf
 
                                     <div class="mb-3">
-                                        <label for="username" class="form-label">{{ __('website.email_address') }}</label>
+                                        <label for="username" class="form-label">{{ __('website.email') }}</label>
                                         <input type="email" class="form-control" id="username" name="email"
                                             placeholder="{{ __('website.enter_your_email') }}" value="{{ old('email') }}"
                                             required>

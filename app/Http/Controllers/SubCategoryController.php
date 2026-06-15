@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\SubCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class SubCategoryController extends Controller
 {
@@ -48,7 +49,7 @@ class SubCategoryController extends Controller
         $inputs = $request->all();
         $rules = [
             'category' => 'required|integer|exists:categories,id',
-            'name' => 'required|string',
+            'name' => 'required|string|unique:sub_categories,name',
             'status' => 'in:0,1'
         ];
         $validation = validator($inputs, $rules);
@@ -89,7 +90,11 @@ class SubCategoryController extends Controller
     {
         $validated = $request->validate([
             'category' => 'required|integer|exists:categories,id',
-            'name' => 'nullable|string',
+            'name' => [
+                'required',
+                'string',
+                Rule::unique('sub_categories', 'name')->ignore($subcategory->id),
+            ],
             'status' => 'required|boolean',
         ]);
 

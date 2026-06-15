@@ -29,7 +29,7 @@
 
                         <td>{{ $sr }}</td>
 
-                        <td>{{ $row->user->name ?? '-' }}</td>
+                        <td>{{ $row->user->name ?? 'Guest User' }}</td>
 
                         <td>{{ $row->product->name ?? '-' }}</td>
 

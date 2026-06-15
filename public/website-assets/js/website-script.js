@@ -554,6 +554,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
                 return;
             }
+const savedAddresses = document.querySelectorAll(
+    'input[name="saved_billing_id"]'
+);
+
+const manualVisible =
+    !document.getElementById("manual-billing-form")
+        .classList.contains("d-none");
+
+if (savedAddresses.length === 0 && !manualVisible) {
+    alert("Please add an address first");
+    return;
+}
+
             checkoutForm.requestSubmit();
         });
 
